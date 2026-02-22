@@ -1,14 +1,101 @@
 import React from 'react';
-import { Home, BookOpen, MessageSquare, Film, Plus, History, Brain, Bolt, Star, Info, Bookmark, ExternalLink } from 'lucide-react';
+import { Home, BookOpen, MessageSquare, Film, Plus, History, Brain, Bolt, Star, Info, Bookmark, ExternalLink, Download, Search, Send, Trash2, Eye, Cloud, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { PhilosophyAI, Message } from './services/geminiService';
+import { FULL_CATALOG, Book, downloadFile } from './services/libraryService';
+import { CINEMA_CATALOG, PHILOSOPHICAL_PROBLEMS, Video } from './services/cinemaService';
+import ReaderView from './components/ReaderView';
 
-type View = 'landing' | 'dashboard' | 'chat' | 'cinema';
+type View = 'landing' | 'dashboard' | 'chat' | 'cinema' | 'library';
 
 export default function App() {
   const [currentView, setCurrentView] = React.useState<View>('landing');
+  const [chatMessages, setChatMessages] = React.useState<Message[]>([
+    { role: 'model', text: 'Bienvenido, buscador de la verdad. ¿Qué premisa de tu realidad deseas que cuestionemos hoy?' }
+  ]);
+  const [userInput, setUserInput] = React.useState('');
+  const [isTyping, setIsTyping] = React.useState(false);
+  const [myReadings, setMyReadings] = React.useState<Book[]>([]);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [activeReaderBook, setActiveReaderBook] = React.useState<Book | null>(null);
+  const [downloadProgress, setDownloadProgress] = React.useState<Record<string, number>>({});
+  
+  const aiRef = React.useRef<PhilosophyAI | null>(null);
+
+  React.useEffect(() => {
+    if (process.env.GEMINI_API_KEY) {
+      aiRef.current = new PhilosophyAI(process.env.GEMINI_API_KEY);
+    }
+  }, []);
+
+  const handleSendMessage = async () => {
+    if (!userInput.trim() || !aiRef.current) return;
+
+    const userMessage: Message = { role: 'user', text: userInput };
+    const initialModelMessage: Message = { role: 'model', text: '' };
+    
+    setChatMessages(prev => [...prev, userMessage, initialModelMessage]);
+    setUserInput('');
+    setIsTyping(true);
+
+    try {
+      const stream = aiRef.current.sendMessageStream(userInput);
+      let fullText = '';
+      
+      for await (const chunk of stream) {
+        fullText += chunk;
+        setChatMessages(prev => {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1] = { role: 'model', text: fullText };
+          return newMessages;
+        });
+        setIsTyping(false); // Once we start receiving text, we stop the "typing" indicator
+      }
+    } catch (error) {
+      setChatMessages(prev => {
+        const newMessages = [...prev];
+        newMessages[newMessages.length - 1] = { role: 'model', text: "La dialéctica se ha visto interrumpida por un error técnico. Inténtalo de nuevo." };
+        return newMessages;
+      });
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const addToReadings = async (book: Book) => {
+    if (myReadings.find(b => b.id === book.id)) return;
+    
+    try {
+      const localUrl = await downloadFile(book.pdfUrl, (progress) => {
+        setDownloadProgress(prev => ({ ...prev, [book.id]: progress }));
+      });
+      
+      setMyReadings([...myReadings, { ...book, pdfUrl: localUrl }]);
+      setDownloadProgress(prev => {
+        const next = { ...prev };
+        delete next[book.id];
+        return next;
+      });
+    } catch (error) {
+      console.error("Error downloading book:", error);
+    }
+  };
+
+  const removeFromReadings = (id: string) => {
+    setMyReadings(myReadings.filter(b => b.id !== id));
+  };
 
   return (
     <div className="relative h-screen w-full overflow-hidden flex bg-punk-black">
+      <AnimatePresence>
+        {activeReaderBook && (
+          <ReaderView 
+            fileUrl={activeReaderBook.pdfUrl} 
+            title={activeReaderBook.title} 
+            onClose={() => setActiveReaderBook(null)} 
+          />
+        )}
+      </AnimatePresence>
       <div className="texture-overlay" />
       <div className="scanline" />
 
@@ -19,7 +106,8 @@ export default function App() {
             <div className="size-12 bg-primary text-black rounded-sm flex items-center justify-center font-black text-3xl font-serif -rotate-3 border-2 border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]">Z</div>
             <div className="flex flex-col">
               <h1 className="text-white text-2xl font-bold leading-none tracking-tight font-serif">Filosofía Z</h1>
-              <div className="flex items-center gap-2 mt-1">
+              <p className="text-[10px] text-primary font-bold mt-1 uppercase tracking-wider">By Miguel Ángel Romero</p>
+              <div className="flex items-center gap-2 mt-2">
                 <span className="bg-white text-black text-[9px] uppercase font-black px-1 py-0.5 tracking-widest">Academic Punk</span>
               </div>
             </div>
@@ -27,7 +115,7 @@ export default function App() {
 
           <nav className="flex flex-col gap-3">
             <NavItem active={currentView === 'dashboard'} icon={<Home size={20} />} label="Inicio" onClick={() => setCurrentView('dashboard')} />
-            <NavItem active={false} icon={<BookOpen size={20} />} label="Biblioteca" onClick={() => {}} />
+            <NavItem active={currentView === 'library'} icon={<BookOpen size={20} />} label="Biblioteca" onClick={() => setCurrentView('library')} />
             <NavItem active={currentView === 'chat'} icon={<MessageSquare size={20} />} label="Chat IA" onClick={() => setCurrentView('chat')} />
             <NavItem active={currentView === 'cinema'} icon={<Film size={20} />} label="Cine" onClick={() => setCurrentView('cinema')} />
           </nav>
@@ -42,10 +130,26 @@ export default function App() {
               <span className="text-xs font-bold text-gray-200">Conexión Socrática</span>
             </div>
           </div>
-          <button className="flex w-full items-center justify-center gap-2 rounded bg-primary py-3.5 text-sm font-black uppercase text-black transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)] hover:bg-white hover:shadow-[4px_4px_0px_0px_#fdf001] hover:-translate-y-1 hover:translate-x-1 active:translate-y-0 active:translate-x-0 active:shadow-none border-2 border-transparent">
+          <button 
+            onClick={() => {
+              setChatMessages([{ role: 'model', text: 'Bienvenido, buscador de la verdad. ¿Qué premisa de tu realidad deseas que cuestionemos hoy?' }]);
+              setCurrentView('chat');
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded bg-primary py-3.5 text-sm font-black uppercase text-black transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)] hover:bg-white hover:shadow-[4px_4px_0px_0px_#fdf001] hover:-translate-y-1 hover:translate-x-1 active:translate-y-0 active:translate-x-0 active:shadow-none border-2 border-transparent"
+          >
             <Plus size={18} />
             Nueva Consulta
           </button>
+
+          <div className="mt-8 pt-8 border-t border-white/5 flex items-start gap-3">
+            <div className="size-8 bg-primary rounded-full flex items-center justify-center shrink-0">
+              <span className="text-black font-black text-xs">Z</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] text-white font-bold uppercase tracking-tighter">Filosofia Z</span>
+              <span className="text-[9px] text-gray-500 italic leading-tight">Pensamiento radical desde el Sur</span>
+            </div>
+          </div>
         </div>
       </aside>
 
@@ -53,10 +157,41 @@ export default function App() {
       <main className="flex-1 flex flex-col relative z-10 overflow-hidden">
         <AnimatePresence mode="wait">
           {currentView === 'landing' && <LandingView onStart={() => setCurrentView('dashboard')} />}
-          {currentView === 'dashboard' && <DashboardView onNavigate={setCurrentView} />}
-          {currentView === 'chat' && <ChatView />}
+          {currentView === 'dashboard' && (
+            <DashboardView 
+              onNavigate={setCurrentView} 
+              readings={myReadings} 
+              onRemoveReading={removeFromReadings} 
+              onRead={setActiveReaderBook}
+            />
+          )}
+          {currentView === 'chat' && (
+            <ChatView 
+              messages={chatMessages} 
+              userInput={userInput} 
+              setUserInput={setUserInput} 
+              onSend={handleSendMessage} 
+              isTyping={isTyping} 
+            />
+          )}
           {currentView === 'cinema' && <CinemaView />}
+          {currentView === 'library' && (
+            <LibraryView 
+              searchQuery={searchQuery} 
+              setSearchQuery={setSearchQuery} 
+              onDownload={addToReadings} 
+              myReadings={myReadings}
+              onRead={setActiveReaderBook}
+              downloadProgress={downloadProgress}
+            />
+          )}
         </AnimatePresence>
+
+        <footer className="mt-auto p-4 border-t border-white/5 bg-black/20 text-center">
+          <p className="text-[10px] text-gray-500 uppercase tracking-[0.3em] font-bold">
+            Argentina, Zárate, Provincia de Buenos Aires - Derechos reservados
+          </p>
+        </footer>
       </main>
     </div>
   );
@@ -121,7 +256,7 @@ function LandingView({ onStart }: { onStart: () => void }) {
         <div className="mt-12 flex flex-col sm:flex-row gap-5">
           <button onClick={onStart} className="bg-primary text-black px-10 py-4 font-black text-lg flex items-center justify-center uppercase tracking-wider group transition-all hover:scale-105 hover:-rotate-1">
             <Bolt className="mr-2 group-hover:rotate-12 transition-transform" />
-            Comenzar Caos
+            Comenzar Kaos
           </button>
           <button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black px-10 py-4 font-bold text-lg flex items-center justify-center uppercase tracking-wider transition-all">
             <Info className="mr-2" />
@@ -133,7 +268,7 @@ function LandingView({ onStart }: { onStart: () => void }) {
   );
 }
 
-function DashboardView({ onNavigate }: { onNavigate: (v: View) => void }) {
+function DashboardView({ onNavigate, readings, onRemoveReading, onRead }: { onNavigate: (v: View) => void, readings: Book[], onRemoveReading: (id: string) => void, onRead: (b: Book) => void }) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -153,13 +288,14 @@ function DashboardView({ onNavigate }: { onNavigate: (v: View) => void }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
         <ModuleCard 
           title="Biblioteca" 
           subtitle="Radical" 
           tag="READ" 
           footer="Textos Prohibidos"
           image="https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=1000&auto=format&fit=crop"
+          onClick={() => onNavigate('library')}
         />
         <ModuleCard 
           title="El Profe" 
@@ -178,14 +314,73 @@ function DashboardView({ onNavigate }: { onNavigate: (v: View) => void }) {
           onClick={() => onNavigate('cinema')}
         />
         <ModuleCard 
-          title="Mis Lecturas" 
-          subtitle="Progreso 75%" 
+          title="Mi Biblioteca" 
+          subtitle={`${readings.length} Archivos`} 
           tag="ACTIVE" 
-          footer="Continúa: Así habló Zaratustra"
+          footer={readings.length > 0 ? `Último: ${readings[readings.length-1].title}` : "Sin lecturas activas"}
           image="https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1000&auto=format&fit=crop"
-          progress={75}
+          progress={readings.length > 0 ? 100 : 0}
         />
       </div>
+
+      <div className="mb-16">
+        <a 
+          href="https://www.instagram.com/elprofedefilosofia/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center gap-4 p-6 bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-white/10 rounded-sm group hover:border-primary transition-all"
+        >
+          <div className="size-12 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </div>
+          <div>
+            <h4 className="text-white font-black uppercase tracking-widest text-sm">Sigue la Revolución en Instagram</h4>
+            <p className="text-xs text-gray-400 font-serif italic">@elprofedefilosofia - Pensamiento radical en dosis visuales.</p>
+          </div>
+          <ExternalLink className="ml-auto text-gray-600 group-hover:text-primary" size={20} />
+        </a>
+      </div>
+
+      {readings.length > 0 && (
+        <section className="space-y-6">
+          <div className="flex items-center gap-3 border-b border-white/10 pb-2">
+            <Bookmark className="text-primary" size={24} />
+            <h3 className="text-2xl font-bold text-white font-serif italic">Mi Biblioteca</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {readings.map(book => (
+              <div key={book.id} className="bg-surface-dark border border-white/10 p-4 flex gap-4 group hover:border-primary transition-all">
+                <div className="relative overflow-hidden">
+                  <img src={book.cover} className="w-20 h-28 object-cover grayscale group-hover:grayscale-0 transition-all" alt={book.title} />
+                  <button 
+                    onClick={() => onRead(book)}
+                    className="absolute inset-0 bg-primary/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-black"
+                  >
+                    <Eye size={24} />
+                  </button>
+                </div>
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <h4 className="text-white font-bold font-serif truncate">{book.title}</h4>
+                    <p className="text-xs text-gray-400">{book.author}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => onRead(book)}
+                      className="text-[10px] bg-primary text-black px-3 py-1 transition-all uppercase font-black hover:bg-white"
+                    >
+                      Leer Ahora
+                    </button>
+                    <button onClick={() => onRemoveReading(book.id)} className="text-gray-500 hover:text-red-500 ml-auto p-1">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </motion.div>
   );
 }
@@ -248,7 +443,15 @@ function ModuleCard({ title, subtitle, tag, footer, image, isAI, progress, onCli
   );
 }
 
-function ChatView() {
+function ChatView({ messages, userInput, setUserInput, onSend, isTyping }: any) {
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, isTyping]);
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -259,14 +462,23 @@ function ChatView() {
       <div className="flex-1 flex flex-col bg-surface-dark/50 overflow-hidden">
         <header className="flex items-center justify-between px-8 py-5 border-b border-white/10 bg-punk-black/95 z-20 shadow-lg">
           <div className="flex items-center gap-5">
-            <div className="size-10 flex items-center justify-center rounded bg-white/10 text-primary border border-white/5">
-              <Brain size={24} />
+            <div className="relative">
+              <div className="size-14 rounded bg-primary overflow-hidden border-2 border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] rotate-2">
+                <img 
+                  src="https://picsum.photos/seed/socrates-punk/200/200?grayscale" 
+                  alt="Punk Philosopher" 
+                  className="w-full h-full object-cover contrast-150 brightness-75"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-primary/20 mix-blend-overlay" />
+              </div>
+              <div className="absolute -bottom-1 -right-1 size-4 bg-green-500 rounded-full border-2 border-punk-black animate-pulse" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white tracking-tight font-serif italic">El Profe de Filosofía</h2>
-              <div className="flex gap-2 items-center">
+              <h2 className="text-2xl font-bold text-white tracking-tight font-serif italic leading-none">El Profe Punk</h2>
+              <div className="flex gap-2 items-center mt-1">
                 <span className="text-[10px] bg-primary text-black px-1.5 py-0.5 font-bold uppercase tracking-wider">v2.4</span>
-                <p className="text-[10px] text-gray-400 uppercase tracking-wide">Método Elenchos</p>
+                <p className="text-[10px] text-gray-400 uppercase tracking-wide">Pensamiento Radical</p>
               </div>
             </div>
           </div>
@@ -284,40 +496,45 @@ function ChatView() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-8 space-y-12 custom-scrollbar">
-          <ChatMessage 
-            role="profe" 
-            content="¿Considerás, che, que la justicia es simplemente el interés del más fuerte, o hay algo más profundo en la esencia del alma porteña que se nos escapa entre el ruido de la calle?" 
-            reference="La República, Libro I"
-          />
-          <ChatMessage 
-            role="user" 
-            content="Me parece que la justicia es una construcción de poder, una chispa rebelde en medio del caos. No es una verdad eterna, sino el grito de los que no se conforman con el orden establecido." 
-          />
-          <ChatMessage 
-            role="profe" 
-            content="Interesante provocación. Pero decime, si la justicia es solo un 'grito rebelde', ¿cómo distinguimos el grito del justo del grito del tirano? ¿Acaso la rebeldía por sí sola valida la acción, o necesita una brújula moral que la guíe?" 
-            isTyping
-          />
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-12 custom-scrollbar">
+          {messages.map((msg: Message, i: number) => (
+            <ChatMessage 
+              key={i}
+              role={msg.role === 'model' ? 'profe' : 'user'} 
+              content={msg.text} 
+              isTyping={isTyping && i === messages.length - 1 && msg.role === 'model'}
+            />
+          ))}
+          {isTyping && messages[messages.length-1].role === 'user' && (
+            <ChatMessage role="profe" content="..." isTyping />
+          )}
         </div>
 
         <div className="p-6 bg-gradient-to-t from-black via-punk-black to-transparent backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto relative group">
+          <form 
+            onSubmit={(e) => { e.preventDefault(); onSend(); }}
+            className="max-w-4xl mx-auto relative group"
+          >
             <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-transparent rounded blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
             <div className="relative flex items-center gap-0 bg-punk-black border-2 border-white/20 p-2 shadow-2xl">
               <div className="flex items-center justify-center px-4 text-primary border-r border-white/10">
                 <Brain size={24} />
               </div>
               <input 
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
                 className="flex-1 bg-transparent border-none focus:ring-0 text-white placeholder:text-gray-600 px-4 py-3 font-sans text-lg font-light" 
                 placeholder="Escribe tu pregunta..." 
                 type="text"
               />
-              <button className="bg-primary text-black size-12 flex items-center justify-center transition-all hover:bg-white hover:scale-105">
-                <Bolt size={24} />
+              <button 
+                type="submit"
+                className="bg-primary text-black size-12 flex items-center justify-center transition-all hover:bg-white hover:scale-105"
+              >
+                <Send size={24} />
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
 
@@ -398,10 +615,15 @@ function ChatMessage({ role, content, reference, isTyping }: any) {
     return (
       <div className="flex flex-col gap-2 max-w-3xl group">
         <div className="flex items-center gap-3 mb-1 opacity-60 group-hover:opacity-100 transition-opacity">
-          <div className="size-6 rounded bg-primary flex items-center justify-center text-black">
-            <Brain size={14} />
+          <div className="size-8 rounded bg-primary overflow-hidden border border-white/20">
+            <img 
+              src="https://picsum.photos/seed/socrates-punk/100/100?grayscale" 
+              alt="" 
+              className="w-full h-full object-cover contrast-200"
+              referrerPolicy="no-referrer"
+            />
           </div>
-          <span className="text-xs uppercase font-black tracking-widest text-primary">El Profe</span>
+          <span className="text-xs uppercase font-black tracking-widest text-primary">El Profe Punk</span>
         </div>
         <div className="relative p-8 bg-aged-paper text-slate-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)] border-2 border-black transform -rotate-1">
           <div className="absolute -top-3 -right-3 size-10 bg-primary border-2 border-black flex items-center justify-center shadow-sm z-10 rotate-12">
@@ -443,13 +665,76 @@ function ChatMessage({ role, content, reference, isTyping }: any) {
 }
 
 function CinemaView() {
+  const [activeProblem, setActiveProblem] = React.useState(PHILOSOPHICAL_PROBLEMS[0]);
+  const [selectedVideo, setSelectedVideo] = React.useState<Video | null>(null);
+
+  const filteredVideos = CINEMA_CATALOG.filter(v => v.category === activeProblem);
+
+  const getTelegramEmbedUrl = (url: string) => {
+    // Telegram links like https://t.me/channel/123 can be embedded via widget
+    // but for simplicity and reliability in a "punk" app, we'll provide a direct redirect
+    // after showing the synopsis.
+    return url;
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex-1 overflow-y-auto custom-scrollbar bg-background-dark"
+      className="flex-1 overflow-y-auto custom-scrollbar bg-background-dark relative"
     >
+      <AnimatePresence>
+        {selectedVideo && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 md:p-12"
+          >
+            <button 
+              onClick={() => setSelectedVideo(null)}
+              className="absolute top-8 right-8 text-white/50 hover:text-primary transition-colors flex items-center gap-2 uppercase font-black tracking-widest text-xs"
+            >
+              Cerrar <Plus className="rotate-45" size={20} />
+            </button>
+            
+            <div className="w-full max-w-4xl bg-surface-dark border-2 border-primary/20 p-8 md:p-12 shadow-[0_0_50px_rgba(253,240,1,0.1)] relative overflow-hidden">
+              <div className="absolute top-0 right-0 opacity-10 pointer-events-none select-none text-[80px] font-black leading-none text-white rotate-12 translate-x-1/4 -translate-y-1/4">CINEMA</div>
+              
+              <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
+                <img 
+                  src={selectedVideo.cover} 
+                  alt={selectedVideo.title} 
+                  className="w-48 h-72 object-cover border border-white/10 grayscale hover:grayscale-0 transition-all duration-500 shadow-2xl"
+                />
+                <div className="flex-1 space-y-6">
+                  <div>
+                    <p className="text-primary font-black uppercase text-xs tracking-[0.3em] mb-2">Sinopsis Filosófica</p>
+                    <h3 className="text-4xl md:text-5xl font-black text-white font-serif italic uppercase tracking-tighter leading-none">
+                      {selectedVideo.title}
+                    </h3>
+                  </div>
+                  <p className="text-gray-300 font-serif italic text-lg leading-relaxed border-l-2 border-primary/50 pl-6">
+                    {selectedVideo.synopsis}
+                  </p>
+                  <div className="pt-4">
+                    <a 
+                      href={selectedVideo.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-3 bg-primary text-black px-10 py-5 font-black text-sm uppercase tracking-widest hover:bg-white transition-all shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[8px_8px_0px_0px_#fdf001] hover:-translate-y-1 hover:translate-x-1"
+                    >
+                      Ver en Telegram <ExternalLink size={18} />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <section className="relative w-full h-[70vh] flex items-end pb-24 px-12 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
@@ -466,65 +751,216 @@ function CinemaView() {
             <div className="h-px w-12 bg-primary"></div>
           </div>
           <h2 className="text-6xl md:text-8xl font-black leading-[0.9] text-white italic tracking-tighter">
-            EL MITO DE <br />
-            <span className="text-primary font-serif not-italic">SÍSIFO</span> DIGITAL
+            CINE <br />
+            <span className="text-primary font-serif not-italic">PUNK</span> DIGITAL
           </h2>
           <p className="text-lg md:text-xl text-slate-300 max-w-xl font-light italic leading-relaxed border-l-2 border-primary pl-4">
-            Explorando la búsqueda de sentido en un mundo hiperconectado. Una visión existencialista radical.
+            Agregador de contenido descentralizado. Películas que cuestionan la estructura de la realidad.
           </p>
           <div className="flex flex-wrap gap-4 pt-6">
-            <button className="bg-primary hover:bg-white text-black px-8 py-4 rounded-sm font-black text-sm uppercase tracking-wider flex items-center gap-2 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]">
-              Play Now
+            <button 
+              onClick={() => setSelectedVideo(CINEMA_CATALOG[0])}
+              className="bg-primary hover:bg-white text-black px-8 py-4 rounded-sm font-black text-sm uppercase tracking-wider flex items-center gap-2 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]"
+            >
+              Ver Destacada
             </button>
-            <button className="bg-transparent border border-white/30 text-white px-8 py-4 rounded-sm font-bold text-sm uppercase tracking-wider flex items-center gap-2 hover:bg-white/5 transition-colors">
-              More Info
-            </button>
+            <a 
+              href="https://t.me/tuspeliculas15555" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-transparent border border-white/30 text-white px-8 py-4 rounded-sm font-bold text-sm uppercase tracking-wider flex items-center gap-2 hover:bg-white/5 transition-colors"
+            >
+              Canal Telegram
+            </a>
           </div>
         </div>
       </section>
 
       <div className="p-12 space-y-16">
-        <CinemaSection title="Existencialismo" count="01" />
-        <CinemaSection title="Cinesofía" count="02" isSpecial />
-        <CinemaSection title="Ética y Moralidad" count="03" />
+        <div className="flex flex-wrap gap-4 border-b border-white/10 pb-6">
+          {PHILOSOPHICAL_PROBLEMS.map(problem => (
+            <button
+              key={problem}
+              onClick={() => setActiveProblem(problem)}
+              className={`px-4 py-2 text-xs uppercase font-black tracking-widest transition-all ${
+                activeProblem === problem ? 'bg-primary text-black' : 'text-gray-400 hover:text-primary'
+              }`}
+            >
+              {problem}
+            </button>
+          ))}
+        </div>
+
+        <section className="space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-8 bg-primary rotate-12"></div>
+            <h3 className="text-2xl font-bold tracking-tight text-white uppercase font-serif italic">
+              {activeProblem}
+            </h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredVideos.map(video => (
+              <VideoCard key={video.id} video={video} onSelect={() => setSelectedVideo(video)} />
+            ))}
+          </div>
+        </section>
       </div>
     </motion.div>
   );
 }
 
-function CinemaSection({ title, count, isSpecial }: any) {
+function VideoCard({ video, onSelect }: any) {
   return (
-    <section className="space-y-6">
-      <div className="flex justify-between items-end">
-        <div className="flex items-center gap-3">
-          <div className="w-1 h-8 bg-primary rotate-12"></div>
-          <h3 className="text-2xl font-bold tracking-tight text-white uppercase font-serif italic">
-            <span className="text-primary text-3xl mr-2 font-sans not-italic font-black">#{count}</span>{title}
-          </h3>
+    <div className="group cursor-pointer" onClick={onSelect}>
+      <div className="relative aspect-video bg-black border border-white/10 group-hover:border-primary transition-all duration-300 overflow-hidden">
+        <img src={video.cover} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 opacity-60 group-hover:opacity-100" referrerPolicy="no-referrer" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="size-16 rounded-full bg-primary/20 backdrop-blur-sm border border-primary flex items-center justify-center text-primary">
+            <Film size={32} />
+          </div>
         </div>
-        <button className="text-primary text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">View All</button>
+        <div className="absolute bottom-4 left-4 right-4">
+          <p className="text-[10px] text-primary font-black uppercase mb-1 tracking-wider">@ElProfe1981</p>
+          <h4 className="text-lg font-bold text-white leading-tight group-hover:text-primary transition-colors font-serif italic">{video.title}</h4>
+        </div>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <VideoCard title="El Vacío Digital" author="@ElProfe1981" image="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=600&auto=format&fit=crop" />
-        <VideoCard title="Camus: El Rebelde" author="@ElProfe1981" image="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=600&auto=format&fit=crop" />
-        <VideoCard title="Existencia y Esencia" author="@ElProfe1981" image="https://images.unsplash.com/photo-1505664194779-8beaceb93744?q=80&w=600&auto=format&fit=crop" />
+      <div className="mt-4 space-y-2">
+        <p className="text-xs text-gray-400 font-serif italic line-clamp-2">{video.synopsis}</p>
+        <button 
+          className="inline-flex items-center gap-2 text-[10px] text-primary font-black uppercase tracking-widest hover:text-white transition-colors"
+        >
+          Ver Sinopsis <Info size={12} />
+        </button>
       </div>
-    </section>
+    </div>
   );
 }
 
-function VideoCard({ title, author, image }: any) {
+function LibraryView({ searchQuery, setSearchQuery, onDownload, myReadings, onRead, downloadProgress }: any) {
+  const filteredBooks = FULL_CATALOG.filter(book => 
+    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    book.author.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="group cursor-pointer">
-      <div className="relative aspect-video bg-black border border-white/10 group-hover:border-primary transition-all duration-300 overflow-hidden">
-        <img src={image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 opacity-60 group-hover:opacity-100" referrerPolicy="no-referrer" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-        <div className="absolute bottom-4 left-4 right-4">
-          <p className="text-[10px] text-primary font-black uppercase mb-1 tracking-wider">{author}</p>
-          <h4 className="text-lg font-bold text-white leading-tight group-hover:text-primary transition-colors font-serif italic">{title}</h4>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="flex-1 overflow-y-auto p-12 custom-scrollbar"
+    >
+      <div className="max-w-4xl mx-auto space-y-12">
+        <div className="text-center space-y-4">
+          <h2 className="text-5xl font-black uppercase tracking-tighter text-white font-serif">
+            Biblioteca <span className="italic text-primary">Radical</span>
+          </h2>
+          <div className="flex flex-col items-center justify-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest">Solo en Español</span>
+              <p className="text-gray-400 font-serif italic">Catálogo descentralizado de pensamiento clásico y contemporáneo.</p>
+            </div>
+            <a 
+              href="https://drive.google.com/drive/folders/1_5cStQJHIKfEVyBhAI6TA8fZQOUQG4mZ?usp=drive_link" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-[10px] text-primary hover:text-white transition-colors flex items-center gap-2 border border-primary/20 px-3 py-1 rounded-full bg-primary/5"
+            >
+              <ExternalLink size={12} />
+              Acceder a mi Drive Personal
+            </a>
+          </div>
+        </div>
+
+        <div className="relative group">
+          <div className="absolute -inset-0.5 bg-primary rounded blur opacity-10 group-hover:opacity-30 transition"></div>
+          <div className="relative flex items-center bg-punk-black border-2 border-white/10 p-2">
+            <Search className="text-gray-500 ml-4" size={20} />
+            <input 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 bg-transparent border-none focus:ring-0 text-white placeholder:text-gray-700 px-4 py-3 text-lg" 
+              placeholder="Buscar por autor o título (Platón, Kant, Nietzsche...)" 
+              type="text"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {filteredBooks.map(book => {
+            const isDownloaded = myReadings.some((b: Book) => b.id === book.id);
+            const progress = downloadProgress[book.id];
+            const isDownloading = progress !== undefined;
+
+            return (
+              <div key={book.id} className="bg-surface-dark border border-white/10 p-6 flex gap-6 group hover:border-primary transition-all relative overflow-hidden">
+                {isDownloading && (
+                  <div className="absolute bottom-0 left-0 h-1 bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
+                )}
+                
+                <div className="relative shrink-0">
+                  <img src={book.cover} className="w-32 h-44 object-cover grayscale group-hover:grayscale-0 transition-all shadow-xl" alt={book.title} />
+                  {isDownloaded && (
+                    <div className="absolute top-2 right-2 bg-primary text-black p-1 rounded-full shadow-lg">
+                      <Bookmark size={12} />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start">
+                      <h4 className="text-2xl font-bold text-white font-serif italic leading-tight">{book.title}</h4>
+                      <span className="text-[10px] text-gray-500 font-mono">{book.year}</span>
+                    </div>
+                    <p className="text-sm text-primary font-bold uppercase tracking-widest mb-3">{book.author}</p>
+                    <p className="text-xs text-gray-400 font-serif italic line-clamp-3 mb-2">{book.description}</p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      <span className="text-[9px] bg-white/5 text-gray-400 px-1.5 py-0.5 rounded border border-white/10">{book.category}</span>
+                      <span className="text-[9px] bg-white/5 text-gray-400 px-1.5 py-0.5 rounded border border-white/10">{book.pages} págs</span>
+                      <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded border border-primary/20 font-bold">ES</span>
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded border font-bold ${
+                        book.source === 'Elejandría' 
+                          ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' 
+                          : book.source === 'CVC'
+                          ? 'bg-orange-500/10 text-orange-400 border-orange-500/20'
+                          : 'bg-green-500/10 text-green-400 border-green-500/20'
+                      }`}>
+                        {book.source}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => onRead(book)}
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[10px] font-black uppercase tracking-widest bg-white/10 text-white hover:bg-white hover:text-black transition-all border border-white/10"
+                    >
+                      <Eye size={14} />
+                      Lectura Online
+                    </button>
+                    <button 
+                      onClick={() => onDownload(book)}
+                      disabled={isDownloaded || isDownloading}
+                      className={`flex items-center justify-center px-4 py-2.5 transition-all border ${
+                        isDownloaded 
+                          ? 'bg-primary/20 border-primary/50 text-primary cursor-default' 
+                          : isDownloading
+                          ? 'bg-white/5 border-white/10 text-gray-500 cursor-wait'
+                          : 'bg-primary border-primary text-black hover:bg-white hover:border-white'
+                      }`}
+                      aria-label="Descargar"
+                    >
+                      {isDownloading ? <Loader2 size={14} className="animate-spin" /> : isDownloaded ? <Bookmark size={14} /> : <Cloud size={14} />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
