@@ -1,12 +1,13 @@
 import React from 'react';
-import { Home, BookOpen, MessageSquare, Film, Plus, History, Brain, Bolt, Star, Info, Bookmark, ExternalLink, Download, Search, Send, Trash2, Eye, Cloud, Loader2, Globe } from 'lucide-react';
+import { Home, BookOpen, MessageSquare, Film, Plus, History, Brain, Bolt, Star, Info, Bookmark, ExternalLink, Download, Search, Send, Trash2, Eye, Cloud, Loader2, Globe, Clock, Music, Zap, MessageCircle, MapPin, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PhilosophyAI, Message } from './services/geminiService';
 import { Book, downloadFile } from './services/libraryService';
+import { CRONOS_TIMELINE, CronosNode } from './services/cronosService';
 import { CINEMA_CATALOG, PHILOSOPHICAL_PROBLEMS, Video } from './services/cinemaService';
 import ReaderView from './components/ReaderView';
 
-type View = 'landing' | 'dashboard' | 'chat' | 'cinema' | 'library';
+type View = 'landing' | 'dashboard' | 'chat' | 'cinema' | 'library' | 'cronos';
 
 export default function App() {
   const [currentView, setCurrentView] = React.useState<View>('landing');
@@ -19,8 +20,152 @@ export default function App() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeReaderBook, setActiveReaderBook] = React.useState<Book | null>(null);
   const [downloadProgress, setDownloadProgress] = React.useState<Record<string, number>>({});
+  const [language, setLanguage] = React.useState<'es' | 'en'>('es');
   
   const aiRef = React.useRef<PhilosophyAI | null>(null);
+
+  const t = {
+    es: {
+      nav_home: 'Inicio',
+      nav_library: 'Biblioteca',
+      nav_chat: 'Chat IA',
+      nav_cinema: 'Cine',
+      nav_cronos: 'Cronos',
+      nav_new_query: 'Nueva Consulta',
+      soul_status: 'Estado del Alma',
+      socratic_connection: 'Conexión Socrática',
+      philosophy_z: 'Filosofía Z',
+      radical_thought: 'Pensamiento radical desde el Sur',
+      chat_placeholder: 'Escribe tu pregunta...',
+      chat_title: 'El Profe Punk',
+      chat_subtitle: 'Pensamiento Radical',
+      chat_history: 'Ver historial de reflexiones',
+      chat_welcome: 'Bienvenido, buscador de la verdad. ¿Qué premisa de tu realidad deseas que cuestionemos hoy?',
+      chat_error: 'La dialéctica se ha visto interrumpida por un error técnico. Inténtalo de nuevo.',
+      library_title: 'Biblioteca',
+      library_subtitle: 'Repositorio de pensamiento radical y archivos críticos.',
+      library_search: 'Buscar autores o textos...',
+      library_recommended: 'Lectura Recomendada',
+      library_explorer: 'Explorador de Archivos',
+      library_browse_elejandria: 'Navegar en Elejandría',
+      library_open_drive: 'Abrir Drive',
+      cinema_title: 'CINE PUNK DIGITAL',
+      cinema_subtitle: 'Agregador de contenido descentralizado. Películas que cuestionan la estructura de la realidad.',
+      cinema_featured: 'Película Destacada',
+      cinema_telegram: 'Canal Telegram',
+      cinema_close: 'Cerrar',
+      cinema_synopsis: 'Sinopsis Filosófica',
+      cinema_view_featured: 'Ver Destacada',
+      cinema_view_telegram: 'Ver en Telegram',
+      user: 'Usuario',
+      profe: 'El Profe Punk',
+      reference: 'Referencia',
+      bibliography: 'Bibliografía',
+      concepts: 'Conceptos Clave',
+      next_workshop: 'Próximo Taller',
+      workshop_title: 'Existencialismo & Punk en Buenos Aires',
+      landing_manifesto: 'Manifiesto 01',
+      landing_title_1: 'Pensar es',
+      landing_title_2: 'Resistir',
+      landing_quote: '"La filosofía no sirve al Estado ni a la Iglesia. Sirve para entristecer. Una filosofía que no entristece o no contraría a nadie no es una filosofía."',
+      landing_author: '— Gilles Deleuze (Remix)',
+      landing_start: 'Comenzar Kaos',
+      landing_info: 'Manifiesto',
+      dashboard_status: '> SYSTEM_READY',
+      dashboard_title_1: 'Módulos',
+      dashboard_title_2: 'Punk',
+      dashboard_library_sub: 'Radical',
+      dashboard_library_tag: 'READ',
+      dashboard_library_footer: 'Textos Prohibidos',
+      dashboard_profe_sub: 'AI Mentor',
+      dashboard_profe_tag: 'LIVE',
+      dashboard_profe_footer: '"Pregunta, duda, destruye."',
+      dashboard_cinema_sub: 'Cinesofía',
+      dashboard_cinema_tag: 'PREMIUM',
+      dashboard_cinema_footer: 'Análisis Profundo',
+      dashboard_cronos_sub: 'Zeitgeist',
+      dashboard_cronos_tag: 'TIME',
+      dashboard_cronos_footer: 'Línea del Tiempo',
+      dashboard_readings_title: 'Mi Biblioteca',
+      dashboard_readings_empty: 'No has guardado textos en tu bitácora de resistencia aún.',
+      dashboard_instagram_title: 'Sigue la Revolución en Instagram',
+      dashboard_instagram_sub: '@elprofedefilosofia - Pensamiento radical en dosis visuales.',
+      dashboard_my_library_sub: 'Archivos',
+      dashboard_my_library_tag: 'ACTIVE',
+      dashboard_my_library_footer_empty: 'Sin lecturas activas',
+      dashboard_my_library_footer_last: 'Último: '
+    },
+    en: {
+      nav_home: 'Home',
+      nav_library: 'Library',
+      nav_chat: 'AI Chat',
+      nav_cinema: 'Cinema',
+      nav_cronos: 'Cronos',
+      nav_new_query: 'New Query',
+      soul_status: 'Soul Status',
+      socratic_connection: 'Socratic Connection',
+      philosophy_z: 'Philosophy Z',
+      radical_thought: 'Radical thought from the South',
+      chat_placeholder: 'Write your question...',
+      chat_title: 'The Punk Prof',
+      chat_subtitle: 'Radical Thought',
+      chat_history: 'View reflection history',
+      chat_welcome: 'Welcome, truth seeker. What premise of your reality do you wish to question today?',
+      chat_error: 'The dialectic has been interrupted by a technical error. Try again.',
+      library_title: 'Library',
+      library_subtitle: 'Repository of radical thought and critical archives.',
+      library_search: 'Search authors or texts...',
+      library_recommended: 'Recommended Reading',
+      library_explorer: 'File Explorer',
+      library_browse_elejandria: 'Browse Elejandría',
+      library_open_drive: 'Open Drive',
+      cinema_title: 'DIGITAL PUNK CINEMA',
+      cinema_subtitle: 'Decentralized content aggregator. Films that question the structure of reality.',
+      cinema_featured: 'Featured Film',
+      cinema_telegram: 'Telegram Channel',
+      cinema_close: 'Close',
+      cinema_synopsis: 'Philosophical Synopsis',
+      cinema_view_featured: 'View Featured',
+      cinema_view_telegram: 'View on Telegram',
+      user: 'User',
+      profe: 'The Punk Prof',
+      reference: 'Reference',
+      bibliography: 'Bibliography',
+      concepts: 'Key Concepts',
+      next_workshop: 'Next Workshop',
+      workshop_title: 'Existentialism & Punk in Buenos Aires',
+      landing_manifesto: 'Manifesto 01',
+      landing_title_1: 'Thinking is',
+      landing_title_2: 'Resisting',
+      landing_quote: '"Philosophy does not serve the State or the Church. It serves to sadden. A philosophy that does not sadden or contradict anyone is not a philosophy."',
+      landing_author: '— Gilles Deleuze (Remix)',
+      landing_start: 'Start Kaos',
+      landing_info: 'Manifesto',
+      dashboard_status: '> SYSTEM_READY',
+      dashboard_title_1: 'Modules',
+      dashboard_title_2: 'Punk',
+      dashboard_library_sub: 'Radical',
+      dashboard_library_tag: 'READ',
+      dashboard_library_footer: 'Forbidden Texts',
+      dashboard_profe_sub: 'AI Mentor',
+      dashboard_profe_tag: 'LIVE',
+      dashboard_profe_footer: '"Ask, doubt, destroy."',
+      dashboard_cinema_sub: 'Cinesophy',
+      dashboard_cinema_tag: 'PREMIUM',
+      dashboard_cinema_footer: 'Deep Analysis',
+      dashboard_cronos_sub: 'Zeitgeist',
+      dashboard_cronos_tag: 'TIME',
+      dashboard_cronos_footer: 'Timeline',
+      dashboard_readings_title: 'My Library',
+      dashboard_readings_empty: 'You haven\'t saved any texts in your resistance log yet.',
+      dashboard_instagram_title: 'Follow the Revolution on Instagram',
+      dashboard_instagram_sub: '@elprofedefilosofia - Radical thought in visual doses.',
+      dashboard_my_library_sub: 'Files',
+      dashboard_my_library_tag: 'ACTIVE',
+      dashboard_my_library_footer_empty: 'No active readings',
+      dashboard_my_library_footer_last: 'Last: '
+    }
+  }[language];
 
   React.useEffect(() => {
     if (process.env.GEMINI_API_KEY) {
@@ -128,31 +273,32 @@ export default function App() {
           </div>
 
           <nav className="flex flex-col gap-3">
-            <NavItem active={currentView === 'dashboard'} icon={<Home size={20} />} label="Inicio" onClick={() => setCurrentView('dashboard')} />
-            <NavItem active={currentView === 'library'} icon={<BookOpen size={20} />} label="Biblioteca" onClick={() => setCurrentView('library')} />
-            <NavItem active={currentView === 'chat'} icon={<MessageSquare size={20} />} label="Chat IA" onClick={() => setCurrentView('chat')} />
-            <NavItem active={currentView === 'cinema'} icon={<Film size={20} />} label="Cine" onClick={() => setCurrentView('cinema')} />
+            <NavItem active={currentView === 'dashboard'} icon={<Home size={20} />} label={t.nav_home} onClick={() => setCurrentView('dashboard')} />
+            <NavItem active={currentView === 'library'} icon={<BookOpen size={20} />} label={t.nav_library} onClick={() => setCurrentView('library')} />
+            <NavItem active={currentView === 'chat'} icon={<MessageSquare size={20} />} label={t.nav_chat} onClick={() => setCurrentView('chat')} />
+            <NavItem active={currentView === 'cinema'} icon={<Film size={20} />} label={t.nav_cinema} onClick={() => setCurrentView('cinema')} />
+            <NavItem active={currentView === 'cronos'} icon={<Clock size={20} />} label={t.nav_cronos} onClick={() => setCurrentView('cronos')} />
           </nav>
         </div>
 
         <div className="flex flex-col gap-6">
           <div className="p-4 bg-white/5 rounded border border-white/10 relative overflow-hidden group">
             <div className="absolute inset-0 bg-primary/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-            <p className="text-[10px] text-gray-400 uppercase font-bold mb-2 relative z-10 tracking-widest">Estado del Alma</p>
+            <p className="text-[10px] text-gray-400 uppercase font-bold mb-2 relative z-10 tracking-widest">{t.soul_status}</p>
             <div className="flex items-center gap-3 relative z-10">
               <div className="size-2.5 rounded-full bg-primary shadow-[0_0_10px_#fdf001] animate-pulse"></div>
-              <span className="text-xs font-bold text-gray-200">Conexión Socrática</span>
+              <span className="text-xs font-bold text-gray-200">{t.socratic_connection}</span>
             </div>
           </div>
           <button 
             onClick={() => {
-              setChatMessages([{ role: 'model', text: 'Bienvenido, buscador de la verdad. ¿Qué premisa de tu realidad deseas que cuestionemos hoy?' }]);
+              setChatMessages([{ role: 'model', text: t.chat_welcome }]);
               setCurrentView('chat');
             }}
             className="flex w-full items-center justify-center gap-2 rounded bg-primary py-3.5 text-sm font-black uppercase text-black transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)] hover:bg-white hover:shadow-[4px_4px_0px_0px_#fdf001] hover:-translate-y-1 hover:translate-x-1 active:translate-y-0 active:translate-x-0 active:shadow-none border-2 border-transparent"
           >
             <Plus size={18} />
-            Nueva Consulta
+            {t.nav_new_query}
           </button>
 
           <div className="mt-8 pt-8 border-t border-white/5 flex items-start gap-3">
@@ -160,8 +306,8 @@ export default function App() {
               <span className="text-black font-black text-xs">Z</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] text-white font-bold uppercase tracking-tighter">Filosofia Z</span>
-              <span className="text-[9px] text-gray-500 italic leading-tight">Pensamiento radical desde el Sur</span>
+              <span className="text-[10px] text-white font-bold uppercase tracking-tighter">{t.philosophy_z}</span>
+              <span className="text-[9px] text-gray-500 italic leading-tight">{t.radical_thought}</span>
             </div>
           </div>
         </div>
@@ -170,13 +316,14 @@ export default function App() {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col relative z-10 overflow-hidden">
         <AnimatePresence mode="wait">
-          {currentView === 'landing' && <LandingView onStart={() => setCurrentView('dashboard')} />}
+          {currentView === 'landing' && <LandingView onStart={() => setCurrentView('dashboard')} t={t} />}
           {currentView === 'dashboard' && (
             <DashboardView 
               onNavigate={setCurrentView} 
               readings={myReadings} 
               onRemoveReading={removeFromReadings} 
               onRead={setActiveReaderBook}
+              t={t}
             />
           )}
           {currentView === 'chat' && (
@@ -186,11 +333,17 @@ export default function App() {
               setUserInput={setUserInput} 
               onSend={handleSendMessage} 
               isTyping={isTyping} 
+              t={t}
+              language={language}
+              setLanguage={setLanguage}
             />
           )}
-          {currentView === 'cinema' && <CinemaView />}
+          {currentView === 'cinema' && <CinemaView t={t} />}
           {currentView === 'library' && (
-            <LibraryView />
+            <LibraryView t={t} />
+          )}
+          {currentView === 'cronos' && (
+            <CronosView t={t} onNavigate={setCurrentView} />
           )}
         </AnimatePresence>
 
@@ -224,7 +377,7 @@ function NavItem({ active, icon, label, onClick }: { active: boolean, icon: Reac
 
 // --- VIEWS ---
 
-function LandingView({ onStart }: { onStart: () => void }) {
+function LandingView({ onStart, t }: { onStart: () => void, t: any }) {
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -244,30 +397,30 @@ function LandingView({ onStart }: { onStart: () => void }) {
 
       <div className="relative z-10 max-w-4xl">
         <div className="inline-block bg-primary text-black font-bold uppercase text-xs px-2 py-1 mb-4 tracking-widest -rotate-2">
-          Manifiesto 01
+          {t.landing_manifesto}
         </div>
         <h1 className="text-7xl md:text-9xl font-black uppercase italic leading-[0.85] text-white font-serif tracking-tighter">
-          Pensar es <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-yellow-200" style={{ WebkitTextStroke: '1px #fdf001' }}>Resistir</span>
+          {t.landing_title_1} <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-yellow-200" style={{ WebkitTextStroke: '1px #fdf001' }}>{t.landing_title_2}</span>
         </h1>
         
         <div className="mt-8 flex flex-col md:flex-row items-start md:items-center gap-6 border-l-4 border-primary pl-6">
           <p className="text-xl md:text-2xl font-light italic text-slate-200 max-w-lg font-serif">
-            "La filosofía no sirve al Estado ni a la Iglesia. Sirve para entristecer. Una filosofía que no entristece o no contraría a nadie no es una filosofía."
+            {t.landing_quote}
           </p>
         </div>
         <div className="mt-4 text-sm uppercase tracking-[0.2em] font-bold text-primary/80 font-sans pl-7">
-          — Gilles Deleuze (Remix)
+          {t.landing_author}
         </div>
 
         <div className="mt-12 flex flex-col sm:flex-row gap-5">
           <button onClick={onStart} className="bg-primary text-black px-10 py-4 font-black text-lg flex items-center justify-center uppercase tracking-wider group transition-all hover:scale-105 hover:-rotate-1">
             <Bolt className="mr-2 group-hover:rotate-12 transition-transform" />
-            Comenzar Kaos
+            {t.landing_start}
           </button>
           <button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black px-10 py-4 font-bold text-lg flex items-center justify-center uppercase tracking-wider transition-all">
             <Info className="mr-2" />
-            Manifiesto
+            {t.landing_info}
           </button>
         </div>
       </div>
@@ -275,7 +428,7 @@ function LandingView({ onStart }: { onStart: () => void }) {
   );
 }
 
-function DashboardView({ onNavigate, readings, onRemoveReading, onRead }: { onNavigate: (v: View) => void, readings: Book[], onRemoveReading: (id: string) => void, onRead: (b: Book) => void }) {
+function DashboardView({ onNavigate, readings, onRemoveReading, onRead, t }: { onNavigate: (v: View) => void, readings: Book[], onRemoveReading: (id: string) => void, onRead: (b: Book) => void, t: any }) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -285,9 +438,9 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead }: { onNa
     >
       <div className="flex items-end justify-between mb-12 border-b border-white/10 pb-4">
         <div>
-          <span className="text-primary font-mono text-xs mb-2 block">&gt; SYSTEM_READY</span>
+          <span className="text-primary font-mono text-xs mb-2 block">{t.dashboard_status}</span>
           <h2 className="text-5xl font-black uppercase tracking-tighter text-white font-serif">
-            Módulos <span className="italic text-primary">Punk</span>
+            {t.dashboard_title_1} <span className="italic text-primary">{t.dashboard_title_2}</span>
           </h2>
         </div>
         <div className="animate-pulse">
@@ -297,36 +450,36 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead }: { onNa
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
         <ModuleCard 
-          title="Biblioteca" 
-          subtitle="Radical" 
-          tag="READ" 
-          footer="Textos Prohibidos"
+          title={t.nav_library} 
+          subtitle={t.dashboard_library_sub} 
+          tag={t.dashboard_library_tag} 
+          footer={t.dashboard_library_footer}
           image="https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=1000&auto=format&fit=crop"
           onClick={() => onNavigate('library')}
         />
         <ModuleCard 
-          title="El Profe" 
-          subtitle="AI Mentor" 
-          tag="LIVE" 
-          footer='"Pregunta, duda, destruye."'
+          title={t.nav_chat} 
+          subtitle={t.dashboard_profe_sub} 
+          tag={t.dashboard_profe_tag} 
+          footer={t.dashboard_profe_footer}
           isAI
           onClick={() => onNavigate('chat')}
         />
         <ModuleCard 
           title="Videoteca" 
-          subtitle="Cinesofía" 
-          tag="PREMIUM" 
-          footer="Análisis Profundo"
+          subtitle={t.dashboard_cinema_sub} 
+          tag={t.dashboard_cinema_tag} 
+          footer={t.dashboard_cinema_footer}
           image="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1000&auto=format&fit=crop"
           onClick={() => onNavigate('cinema')}
         />
         <ModuleCard 
-          title="Mi Biblioteca" 
-          subtitle={`${readings.length} Archivos`} 
-          tag="ACTIVE" 
-          footer={readings.length > 0 ? `Último: ${readings[readings.length-1].title}` : "Sin lecturas activas"}
-          image="https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1000&auto=format&fit=crop"
-          progress={readings.length > 0 ? 100 : 0}
+          title={t.nav_cronos} 
+          subtitle={t.dashboard_cronos_sub} 
+          tag={t.dashboard_cronos_tag} 
+          footer={t.dashboard_cronos_footer}
+          image="https://images.unsplash.com/photo-1501139083538-0139583c060f?q=80&w=1000&auto=format&fit=crop"
+          onClick={() => onNavigate('cronos')}
         />
       </div>
 
@@ -341,53 +494,13 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead }: { onNa
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
           </div>
           <div>
-            <h4 className="text-white font-black uppercase tracking-widest text-sm">Sigue la Revolución en Instagram</h4>
-            <p className="text-xs text-gray-400 font-serif italic">@elprofedefilosofia - Pensamiento radical en dosis visuales.</p>
+            <h4 className="text-white font-black uppercase tracking-widest text-sm">{t.dashboard_instagram_title}</h4>
+            <p className="text-xs text-gray-400 font-serif italic">{t.dashboard_instagram_sub}</p>
           </div>
           <ExternalLink className="ml-auto text-gray-600 group-hover:text-primary" size={20} />
         </a>
       </div>
 
-      {readings.length > 0 && (
-        <section className="space-y-6">
-          <div className="flex items-center gap-3 border-b border-white/10 pb-2">
-            <Bookmark className="text-primary" size={24} />
-            <h3 className="text-2xl font-bold text-white font-serif italic">Mi Biblioteca</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {readings.map(book => (
-              <div key={book.id} className="bg-surface-dark border border-white/10 p-4 flex gap-4 group hover:border-primary transition-all">
-                <div className="relative overflow-hidden">
-                  <img src={book.cover} className="w-20 h-28 object-cover grayscale group-hover:grayscale-0 transition-all" alt={book.title} />
-                  <button 
-                    onClick={() => onRead(book)}
-                    className="absolute inset-0 bg-primary/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-black"
-                  >
-                    <Eye size={24} />
-                  </button>
-                </div>
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <h4 className="text-white font-bold font-serif truncate">{book.title}</h4>
-                    <p className="text-xs text-gray-400">{book.author}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => onRead(book)}
-                      className="text-[10px] bg-primary text-black px-3 py-1 transition-all uppercase font-black hover:bg-white"
-                    >
-                      Leer Ahora
-                    </button>
-                    <button onClick={() => onRemoveReading(book.id)} className="text-gray-500 hover:text-red-500 ml-auto p-1">
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
     </motion.div>
   );
 }
@@ -450,7 +563,7 @@ function ModuleCard({ title, subtitle, tag, footer, image, isAI, progress, onCli
   );
 }
 
-function ChatView({ messages, userInput, setUserInput, onSend, isTyping }: any) {
+function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, language, setLanguage }: any) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -482,23 +595,33 @@ function ChatView({ messages, userInput, setUserInput, onSend, isTyping }: any) 
               <div className="absolute -bottom-1 -right-1 size-4 bg-green-500 rounded-full border-2 border-punk-black animate-pulse" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white tracking-tight font-serif italic leading-none">El Profe Punk</h2>
+              <h2 className="text-2xl font-bold text-white tracking-tight font-serif italic leading-none">{t.chat_title}</h2>
               <div className="flex gap-2 items-center mt-1">
                 <span className="text-[10px] bg-primary text-black px-1.5 py-0.5 font-bold uppercase tracking-wider">v2.4</span>
-                <p className="text-[10px] text-gray-400 uppercase tracking-wide">Pensamiento Radical</p>
+                <p className="text-[10px] text-gray-400 uppercase tracking-wide">{t.chat_subtitle}</p>
               </div>
             </div>
           </div>
           <div className="flex items-center gap-6">
             <button 
               className="text-gray-400 hover:text-primary transition-colors hover:rotate-12 transform duration-300 focus:outline-none focus:ring-1 focus:ring-primary p-1"
-              aria-label="Ver historial de reflexiones"
+              aria-label={t.chat_history}
             >
               <History size={20} />
             </button>
-            <div className="flex items-center border border-white/20 rounded overflow-hidden" role="group" aria-label="Seleccionar idioma">
-              <button className="px-3 py-1 bg-primary text-black text-[10px] font-black tracking-widest" aria-label="Español">ES</button>
-              <button className="px-3 py-1 bg-transparent text-gray-400 text-[10px] font-black tracking-widest hover:text-white" aria-label="Inglés">EN</button>
+            <div className="flex items-center border border-white/20 rounded overflow-hidden" role="group" aria-label="Language selection">
+              <button 
+                onClick={() => setLanguage('es')}
+                className={`px-3 py-1 text-[10px] font-black tracking-widest transition-colors ${language === 'es' ? 'bg-primary text-black' : 'bg-transparent text-gray-400 hover:text-white'}`}
+              >
+                ES
+              </button>
+              <button 
+                onClick={() => setLanguage('en')}
+                className={`px-3 py-1 text-[10px] font-black tracking-widest transition-colors ${language === 'en' ? 'bg-primary text-black' : 'bg-transparent text-gray-400 hover:text-white'}`}
+              >
+                EN
+              </button>
             </div>
           </div>
         </header>
@@ -510,10 +633,11 @@ function ChatView({ messages, userInput, setUserInput, onSend, isTyping }: any) 
               role={msg.role === 'model' ? 'profe' : 'user'} 
               content={msg.text} 
               isTyping={isTyping && i === messages.length - 1 && msg.role === 'model'}
+              t={t}
             />
           ))}
           {isTyping && messages[messages.length-1].role === 'user' && (
-            <ChatMessage role="profe" content="..." isTyping />
+            <ChatMessage role="profe" content="..." isTyping t={t} />
           )}
         </div>
 
@@ -531,7 +655,7 @@ function ChatView({ messages, userInput, setUserInput, onSend, isTyping }: any) 
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 className="flex-1 bg-transparent border-none focus:ring-0 text-white placeholder:text-gray-600 px-4 py-3 font-sans text-lg font-light" 
-                placeholder="Escribe tu pregunta..." 
+                placeholder={t.chat_placeholder} 
                 type="text"
               />
               <button 
@@ -552,7 +676,7 @@ function ChatView({ messages, userInput, setUserInput, onSend, isTyping }: any) 
         <section className="relative z-10">
           <div className="flex items-center gap-2 mb-6 border-b border-primary/30 pb-2">
             <BookOpen className="text-primary" size={16} />
-            <h3 className="text-xs text-primary uppercase font-black tracking-[0.2em]">Bibliografía</h3>
+            <h3 className="text-xs text-primary uppercase font-black tracking-[0.2em]">{t.bibliography}</h3>
           </div>
           <div className="space-y-4">
             <BibliographyItem title="Apología de Sócrates" author="Platón" />
@@ -563,7 +687,7 @@ function ChatView({ messages, userInput, setUserInput, onSend, isTyping }: any) 
         <section className="relative z-10">
           <div className="flex items-center gap-2 mb-6 border-b border-primary/30 pb-2">
             <Bookmark className="text-primary" size={16} />
-            <h3 className="text-xs text-primary uppercase font-black tracking-[0.2em]">Conceptos Clave</h3>
+            <h3 className="text-xs text-primary uppercase font-black tracking-[0.2em]">{t.concepts}</h3>
           </div>
           <div className="flex flex-wrap gap-2">
             <ConceptTag label="Ironía" active />
@@ -579,10 +703,10 @@ function ChatView({ messages, userInput, setUserInput, onSend, isTyping }: any) 
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 bg-black/80 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-1">
-                <p className="text-[10px] font-black text-primary uppercase tracking-wider">Próximo Taller</p>
+                <p className="text-[10px] font-black text-primary uppercase tracking-wider">{t.next_workshop}</p>
                 <ExternalLink className="text-primary" size={14} />
               </div>
-              <h4 className="text-white text-base font-bold font-serif leading-tight group-hover:text-primary transition-colors">Existencialismo & Punk en Buenos Aires</h4>
+              <h4 className="text-white text-base font-bold font-serif leading-tight group-hover:text-primary transition-colors">{t.workshop_title}</h4>
             </div>
           </div>
         </section>
@@ -617,7 +741,7 @@ function ConceptTag({ label, active }: { label: string, active?: boolean }) {
   );
 }
 
-function ChatMessage({ role, content, reference, isTyping }: any) {
+function ChatMessage({ role, content, reference, isTyping, t }: any) {
   if (role === 'profe') {
     return (
       <div className="flex flex-col gap-2 max-w-3xl group">
@@ -630,17 +754,17 @@ function ChatMessage({ role, content, reference, isTyping }: any) {
               referrerPolicy="no-referrer"
             />
           </div>
-          <span className="text-xs uppercase font-black tracking-widest text-primary">El Profe Punk</span>
+          <span className="text-xs uppercase font-black tracking-widest text-primary">{t.profe}</span>
         </div>
-        <div className="relative p-8 bg-aged-paper text-slate-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)] border-2 border-black transform -rotate-1">
+        <div className="relative p-8 bg-punk-black border-2 border-primary/50 text-white shadow-[8px_8px_0px_0px_rgba(253,240,1,0.2)] transform -rotate-1">
           <div className="absolute -top-3 -right-3 size-10 bg-primary border-2 border-black flex items-center justify-center shadow-sm z-10 rotate-12">
             <span className="text-black font-serif text-2xl">"</span>
           </div>
-          <p className="text-xl leading-relaxed font-serif font-medium">{content}</p>
+          <p className="text-xl leading-relaxed font-serif font-medium text-primary-light">{content}</p>
           {reference && (
-            <div className="mt-6 flex items-center gap-3 pt-4 border-t border-black/10">
-              <span className="px-2 py-0.5 bg-black text-white text-[10px] font-black uppercase tracking-widest -rotate-2">Referencia</span>
-              <span className="text-xs font-bold text-slate-700 italic font-serif">{reference}</span>
+            <div className="mt-6 flex items-center gap-3 pt-4 border-t border-white/10">
+              <span className="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest -rotate-2">{t.reference}</span>
+              <span className="text-xs font-bold text-gray-300 italic font-serif">{reference}</span>
             </div>
           )}
           {isTyping && (
@@ -658,12 +782,12 @@ function ChatMessage({ role, content, reference, isTyping }: any) {
   return (
     <div className="flex flex-col gap-2 max-w-3xl ml-auto items-end group">
       <div className="flex items-center gap-3 mb-1 opacity-60 group-hover:opacity-100 transition-opacity">
-        <span className="text-xs uppercase font-black tracking-widest text-gray-400">Usuario</span>
+        <span className="text-xs uppercase font-black tracking-widest text-gray-400">{t.user}</span>
         <div className="size-6 rounded bg-gray-700 flex items-center justify-center text-primary">
           <Plus size={14} />
         </div>
       </div>
-      <div className="relative p-6 bg-punk-black border border-white/20 text-slate-100 shadow-[8px_8px_0px_0px_#fdf001] rotate-1">
+      <div className="relative p-6 bg-punk-black border border-white/20 text-white shadow-[8px_8px_0px_0px_#fdf001] rotate-1">
         <p className="text-lg leading-relaxed font-sans font-light">{content}</p>
         <div className="absolute -left-1 top-4 w-1 h-8 bg-primary"></div>
       </div>
@@ -671,18 +795,11 @@ function ChatMessage({ role, content, reference, isTyping }: any) {
   );
 }
 
-function CinemaView() {
+function CinemaView({ t }: { t: any }) {
   const [activeProblem, setActiveProblem] = React.useState(PHILOSOPHICAL_PROBLEMS[0]);
   const [selectedVideo, setSelectedVideo] = React.useState<Video | null>(null);
 
   const filteredVideos = CINEMA_CATALOG.filter(v => v.category === activeProblem);
-
-  const getTelegramEmbedUrl = (url: string) => {
-    // Telegram links like https://t.me/channel/123 can be embedded via widget
-    // but for simplicity and reliability in a "punk" app, we'll provide a direct redirect
-    // after showing the synopsis.
-    return url;
-  };
 
   return (
     <motion.div 
@@ -703,7 +820,7 @@ function CinemaView() {
               onClick={() => setSelectedVideo(null)}
               className="absolute top-8 right-8 text-white/50 hover:text-primary transition-colors flex items-center gap-2 uppercase font-black tracking-widest text-xs"
             >
-              Cerrar <Plus className="rotate-45" size={20} />
+              {t.cinema_close} <Plus className="rotate-45" size={20} />
             </button>
             
             <div className="w-full max-w-4xl bg-surface-dark border-2 border-primary/20 p-8 md:p-12 shadow-[0_0_50px_rgba(253,240,1,0.1)] relative overflow-hidden">
@@ -717,7 +834,7 @@ function CinemaView() {
                 />
                 <div className="flex-1 space-y-6">
                   <div>
-                    <p className="text-primary font-black uppercase text-xs tracking-[0.3em] mb-2">Sinopsis Filosófica</p>
+                    <p className="text-primary font-black uppercase text-xs tracking-[0.3em] mb-2">{t.cinema_synopsis}</p>
                     <h3 className="text-4xl md:text-5xl font-black text-white font-serif italic uppercase tracking-tighter leading-none">
                       {selectedVideo.title}
                     </h3>
@@ -730,9 +847,9 @@ function CinemaView() {
                       href={selectedVideo.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-3 bg-primary text-black px-10 py-5 font-black text-sm uppercase tracking-widest hover:bg-white transition-all shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[8px_8px_0px_0px_#fdf001] hover:-translate-y-1 hover:translate-x-1"
+                      className="inline-flex items-center gap-3 bg-primary text-black px-10 py-5 font-black text-sm uppercase tracking-widest hover:bg-white transition-all shadow-[8px_8px_0px_0px_rgba(255,255,255,0.15)] hover:shadow-[8px_8px_0px_0px_#fdf001] hover:-translate-y-1 hover:translate-x-1"
                     >
-                      Ver en Telegram <ExternalLink size={18} />
+                      {t.cinema_view_telegram} <ExternalLink size={18} />
                     </a>
                   </div>
                 </div>
@@ -754,22 +871,22 @@ function CinemaView() {
         </div>
         <div className="relative z-10 max-w-4xl space-y-6">
           <div className="flex items-center gap-3 text-primary mb-2">
-            <span className="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase tracking-wider transform -rotate-2">Featured Film</span>
+            <span className="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase tracking-wider transform -rotate-2">{t.cinema_featured}</span>
             <div className="h-px w-12 bg-primary"></div>
           </div>
           <h2 className="text-6xl md:text-8xl font-black leading-[0.9] text-white italic tracking-tighter">
-            CINE <br />
-            <span className="text-primary font-serif not-italic">PUNK</span> DIGITAL
+            {t.cinema_title.split(' ')[0]} <br />
+            <span className="text-primary font-serif not-italic">{t.cinema_title.split(' ')[1]}</span> {t.cinema_title.split(' ').slice(2).join(' ')}
           </h2>
           <p className="text-lg md:text-xl text-slate-300 max-w-xl font-light italic leading-relaxed border-l-2 border-primary pl-4">
-            Agregador de contenido descentralizado. Películas que cuestionan la estructura de la realidad.
+            {t.cinema_subtitle}
           </p>
           <div className="flex flex-wrap gap-4 pt-6">
             <button 
               onClick={() => setSelectedVideo(CINEMA_CATALOG[0])}
               className="bg-primary hover:bg-white text-black px-8 py-4 rounded-sm font-black text-sm uppercase tracking-wider flex items-center gap-2 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]"
             >
-              Ver Destacada
+              {t.cinema_view_featured}
             </button>
             <a 
               href="https://t.me/tuspeliculas15555" 
@@ -777,13 +894,30 @@ function CinemaView() {
               rel="noopener noreferrer"
               className="bg-transparent border border-white/30 text-white px-8 py-4 rounded-sm font-bold text-sm uppercase tracking-wider flex items-center gap-2 hover:bg-white/5 transition-colors"
             >
-              Canal Telegram
+              {t.cinema_telegram}
             </a>
           </div>
         </div>
       </section>
 
       <div className="p-12 space-y-16">
+        {/* Permanent Featured Video Section */}
+        <section className="space-y-8">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-8 bg-primary"></div>
+            <h3 className="text-2xl font-black text-white uppercase font-serif italic tracking-tight">{t.cinema_featured}: Filosofía Z</h3>
+          </div>
+          <div className="aspect-video w-full bg-punk-black border border-white/10 rounded-sm overflow-hidden shadow-2xl relative group">
+            <iframe 
+              src="https://www.youtube.com/embed/cF2fDtUKyJU" 
+              className="w-full h-full border-none"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title="Filosofía Z Featured Film"
+            />
+          </div>
+        </section>
+
         <div className="flex flex-wrap gap-4 border-b border-white/10 pb-6">
           {PHILOSOPHICAL_PROBLEMS.map(problem => (
             <button
@@ -808,7 +942,7 @@ function CinemaView() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredVideos.map(video => (
-              <VideoCard key={video.id} video={video} onSelect={() => setSelectedVideo(video)} />
+              <VideoCard key={video.id} video={video} onSelect={() => setSelectedVideo(video)} t={t} />
             ))}
           </div>
         </section>
@@ -845,7 +979,7 @@ function VideoCard({ video, onSelect }: any) {
   );
 }
 
-function LibraryView() {
+function LibraryView({ t }: { t: any }) {
   const driveFolderId = '1nV0lSIwVuulm9cSnanOo_LHZC-iCWP2l';
   const featuredFileId = '1JEKRq0dRDLCFfEWyIQl179jXvmzRJxeV';
   const driveUrl = `https://drive.google.com/embeddedfolderview?id=${driveFolderId}#list`;
@@ -865,21 +999,12 @@ function LibraryView() {
         <div className="flex flex-col md:flex-row justify-between items-end gap-6">
           <div className="space-y-2">
             <h2 className="text-5xl font-black uppercase tracking-tighter text-white font-serif">
-              Biblioteca <span className="italic text-academic-blue">Z</span>
+              {t.library_title.split(' ')[0]} <span className="italic text-academic-blue">{t.library_title.split(' ')[1]}</span>
             </h2>
-            <p className="text-gray-400 font-serif italic text-lg">Repositorio de pensamiento radical y archivos críticos.</p>
+            <p className="text-gray-400 font-serif italic text-lg">{t.library_subtitle}</p>
           </div>
           
           <div className="flex gap-4">
-            <a 
-              href="https://www.elejandria.com/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="bg-white/5 border border-white/10 text-white px-6 py-3 rounded-sm font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all flex items-center gap-2"
-            >
-              <Globe size={14} />
-              Navegar en Elejandría
-            </a>
             <a 
               href={`https://drive.google.com/drive/folders/${driveFolderId}`} 
               target="_blank" 
@@ -887,7 +1012,7 @@ function LibraryView() {
               className="bg-academic-blue text-white px-6 py-3 rounded-sm font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all flex items-center gap-2 shadow-lg"
             >
               <ExternalLink size={14} />
-              Abrir Drive
+              {t.library_open_drive}
             </a>
           </div>
         </div>
@@ -896,7 +1021,7 @@ function LibraryView() {
         <section className="space-y-8">
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-8 bg-primary"></div>
-            <h3 className="text-2xl font-black text-white uppercase font-serif italic tracking-tight">Lectura Recomendada</h3>
+            <h3 className="text-2xl font-black text-white uppercase font-serif italic tracking-tight">{t.library_recommended}</h3>
           </div>
           <div className="aspect-video w-full bg-punk-black border border-white/10 rounded-sm overflow-hidden shadow-2xl relative group">
             <iframe 
@@ -912,7 +1037,7 @@ function LibraryView() {
         <section className="space-y-8 flex-1 flex flex-col min-h-[700px]">
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-8 bg-academic-blue"></div>
-            <h3 className="text-2xl font-black text-white uppercase font-serif italic tracking-tight">Explorador de Archivos</h3>
+            <h3 className="text-2xl font-black text-white uppercase font-serif italic tracking-tight">{t.library_explorer}</h3>
           </div>
           <div className="flex-1 bg-punk-black border border-white/10 rounded-sm overflow-hidden shadow-2xl relative group">
             <div className="absolute inset-0 bg-academic-blue/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
@@ -930,10 +1055,327 @@ function LibraryView() {
             <span className="flex items-center gap-2"><div className="size-1.5 bg-academic-blue rounded-full" /> Sincronización Directa</span>
             <span className="flex items-center gap-2"><div className="size-1.5 bg-primary rounded-full" /> Acceso Libre</span>
           </div>
-          <p className="italic font-serif">Filosofía Z - Pensamiento radical desde el Sur</p>
+          <p className="italic font-serif">{t.philosophy_z} - {t.radical_thought}</p>
         </div>
       </div>
     </motion.div>
   );
 }
+
+function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }) {
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [activeNode, setActiveNode] = React.useState<CronosNode>(CRONOS_TIMELINE.find(n => n.id === 'platon') || CRONOS_TIMELINE[0]);
+  const [isFrozen, setIsFrozen] = React.useState(false);
+  const [showChat, setShowChat] = React.useState<string | null>(null);
+  const [relicsFound, setRelicsFound] = React.useState<string[]>([]);
+  const [showCapsule, setShowCapsule] = React.useState(false);
+  const [reflection, setReflection] = React.useState('');
+  const [isMuted, setIsMuted] = React.useState(false);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
+
+  React.useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.3;
+      if (!isMuted) {
+        audioRef.current.play().catch(e => console.log("Autoplay blocked"));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, [isMuted]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const scrollLeft = e.currentTarget.scrollLeft;
+    const width = e.currentTarget.offsetWidth;
+    const index = Math.round(scrollLeft / width);
+    if (CRONOS_TIMELINE[index] && CRONOS_TIMELINE[index].id !== activeNode.id) {
+      setActiveNode(CRONOS_TIMELINE[index]);
+    }
+  };
+
+  const findRelic = (nodeId: string) => {
+    if (!relicsFound.includes(nodeId)) {
+      setRelicsFound([...relicsFound, nodeId]);
+    }
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className={`flex-1 flex flex-col relative overflow-hidden transition-all duration-1000 ${isFrozen ? 'filter grayscale brightness-50' : ''}`}
+      style={{ 
+        backgroundColor: activeNode.aesthetic.color + '10',
+        filter: `brightness(${activeNode.aesthetic.brightness}) ${isFrozen ? 'grayscale(1) brightness(0.5)' : ''}`
+      }}
+    >
+      {/* Background Parallax */}
+      <div className="absolute inset-0 z-0">
+        <AnimatePresence mode="wait">
+          <motion.img 
+            key={activeNode.id}
+            src={activeNode.aesthetic.bg} 
+            className="w-full h-full object-cover opacity-30 grayscale contrast-150"
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 0.3, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 1.5 }}
+            referrerPolicy="no-referrer"
+          />
+        </AnimatePresence>
+        <div className="absolute inset-0 bg-gradient-to-b from-punk-black via-transparent to-punk-black" />
+      </div>
+
+      {/* Header */}
+      <div className="relative z-20 p-8 flex justify-between items-start">
+        <div>
+          <h2 className="text-4xl font-black text-white uppercase font-serif italic tracking-tighter">
+            Cronos <span className="text-primary text-xl not-italic ml-2">v1.0</span>
+          </h2>
+          <p className="text-xs text-primary font-mono mt-1 tracking-widest uppercase">Zeitgeist Explorer // {activeNode.year}</p>
+        </div>
+        <div className="flex gap-4">
+          <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-sm group cursor-help">
+            <div className={`size-8 rounded-full border-2 border-primary overflow-hidden transition-all duration-500 ${relicsFound.length > 2 ? 'scale-110 shadow-[0_0_15px_#fdf001]' : ''}`}>
+              <img 
+                src={`https://picsum.photos/seed/avatar-${relicsFound.length}/100/100?grayscale`} 
+                alt="Avatar Evolutivo" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black text-white uppercase tracking-widest">Avatar Nivel {relicsFound.length + 1}</span>
+              <span className="text-[8px] text-primary uppercase font-bold">{relicsFound.length > 2 ? 'Sabio' : 'Iniciado'}</span>
+            </div>
+          </div>
+          <button 
+            onClick={() => setShowCapsule(true)}
+            className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-sm hover:bg-primary hover:text-black transition-all"
+          >
+            <MapPin size={16} />
+            <span className="text-[10px] font-black uppercase tracking-widest">Cápsula del Tiempo</span>
+          </button>
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-sm">
+            <Sparkles className="text-primary" size={16} />
+            <span className="text-[10px] font-black text-white uppercase tracking-widest">Reliquias: {relicsFound.length}/{CRONOS_TIMELINE.filter(n => n.relic).length}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Horizontal Timeline Container */}
+      <div 
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-x-auto overflow-y-hidden flex snap-x snap-mandatory custom-scrollbar-hide relative z-10"
+        style={{ scrollBehavior: 'smooth' }}
+      >
+        {CRONOS_TIMELINE.map((node, idx) => (
+          <div key={node.id} className="min-w-full h-full flex items-center justify-center snap-center p-12 relative">
+            {/* Parallax Elements */}
+            <motion.div 
+              className="absolute top-1/4 left-1/4 opacity-10 pointer-events-none"
+              animate={{ x: activeNode.id === node.id ? 0 : 100 }}
+            >
+              <Clock size={300} className="text-white" />
+            </motion.div>
+
+            <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <motion.div 
+                initial={{ x: -50, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                className="space-y-6"
+              >
+                <div className="inline-flex items-center gap-3 bg-primary text-black px-4 py-1 font-black text-sm uppercase tracking-tighter -rotate-2">
+                  <Clock size={16} /> {node.year}
+                </div>
+                <h3 className="text-6xl md:text-8xl font-black text-white font-serif italic leading-none tracking-tighter">
+                  {node.title}
+                </h3>
+                <p className="text-2xl text-primary font-bold uppercase tracking-tight">{node.philosopher}</p>
+                <p className="text-xl text-gray-300 font-serif italic leading-relaxed border-l-4 border-primary pl-6">
+                  {node.description}
+                </p>
+
+                <div className="flex flex-wrap gap-4 pt-8">
+                  {node.interactive?.type === 'chat' && (
+                    <button 
+                      onClick={() => setShowChat(node.id)}
+                      className="bg-white/10 border border-white/20 text-white px-6 py-3 rounded-sm font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-black transition-all flex items-center gap-2"
+                    >
+                      <MessageCircle size={18} /> Chat de Pasillo
+                    </button>
+                  )}
+                  {node.interactive?.type === 'action' && (
+                    <button 
+                      onClick={() => {
+                        if (node.interactive?.content.effect === 'freeze') {
+                          setIsFrozen(true);
+                          setTimeout(() => setIsFrozen(false), 3000);
+                        }
+                      }}
+                      className="bg-primary text-black px-6 py-3 rounded-sm font-black text-xs uppercase tracking-widest hover:bg-white transition-all flex items-center gap-2"
+                    >
+                      <Zap size={18} /> {node.interactive.content.label}
+                    </button>
+                  )}
+                  <button 
+                    onClick={() => onNavigate('library')}
+                    className="bg-transparent border border-white/30 text-white px-6 py-3 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-white/5 transition-all flex items-center gap-2"
+                  >
+                    <BookOpen size={18} /> Leer Más
+                  </button>
+                </div>
+              </motion.div>
+
+              <div className="relative flex justify-center">
+                <motion.div 
+                  className="relative size-80 md:size-96"
+                  animate={{ rotate: activeNode.id === node.id ? 0 : 5 }}
+                >
+                  <div className="absolute inset-0 border-4 border-primary/20 rounded-full animate-spin-slow" />
+                  <div className="absolute inset-4 border-2 border-white/10 rounded-full" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <img 
+                      src={`https://picsum.photos/seed/${node.id}/600/600?grayscale`} 
+                      className="size-64 md:size-80 object-cover rounded-full border-4 border-white shadow-2xl grayscale contrast-125"
+                      alt={node.philosopher}
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  
+                  {node.relic && !relicsFound.includes(node.id) && (
+                    <button 
+                      onClick={() => findRelic(node.id)}
+                      className="absolute bottom-0 right-0 size-16 bg-primary text-black rounded-full flex items-center justify-center shadow-2xl animate-bounce border-4 border-punk-black hover:scale-110 transition-transform"
+                    >
+                      <Star size={24} />
+                    </button>
+                  )}
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Chat de Pasillo Modal */}
+      <AnimatePresence>
+        {showChat && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6"
+          >
+            <div className="bg-surface-dark border-2 border-primary p-8 max-w-lg w-full space-y-6 relative">
+              <button 
+                onClick={() => setShowChat(null)}
+                className="absolute -top-4 -right-4 size-10 bg-primary text-black flex items-center justify-center font-black rounded-sm"
+              >
+                X
+              </button>
+              <div className="flex items-center gap-3 mb-4">
+                <MessageCircle className="text-primary" />
+                <h4 className="text-xl font-black text-white uppercase font-serif italic">Chat de Pasillo</h4>
+              </div>
+              <div className="space-y-4">
+                {CRONOS_TIMELINE.find(n => n.id === showChat)?.interactive?.content.messages.map((msg: any, i: number) => (
+                  <div key={i} className={`flex flex-col ${msg.from === 'Heráclito' ? 'items-start' : 'items-end'}`}>
+                    <span className="text-[10px] font-black text-primary uppercase mb-1">{msg.from}</span>
+                    <div className={`p-3 rounded-sm text-sm ${msg.from === 'Heráclito' ? 'bg-white/10 text-white border-l-2 border-primary' : 'bg-primary text-black font-bold'}`}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Cápsula del Tiempo Modal */}
+      <AnimatePresence>
+        {showCapsule && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6"
+          >
+            <div className="bg-surface-dark border-2 border-primary p-8 max-w-lg w-full space-y-6 relative overflow-hidden">
+              <div className="absolute top-0 right-0 opacity-5 pointer-events-none select-none text-[60px] font-black leading-none text-white rotate-12 translate-x-1/4 -translate-y-1/4">CAPSULE</div>
+              <button 
+                onClick={() => setShowCapsule(false)}
+                className="absolute -top-4 -right-4 size-10 bg-primary text-black flex items-center justify-center font-black rounded-sm"
+              >
+                X
+              </button>
+              <div className="flex items-center gap-3 mb-4">
+                <MapPin className="text-primary" />
+                <h4 className="text-xl font-black text-white uppercase font-serif italic">Cápsula del Tiempo</h4>
+              </div>
+              <p className="text-sm text-gray-400 font-serif italic">Deja una reflexión para el futuro. ¿Qué idea de esta época debería perdurar?</p>
+              <textarea 
+                value={reflection}
+                onChange={(e) => setReflection(e.target.value)}
+                className="w-full h-32 bg-punk-black border border-white/20 p-4 text-white font-serif italic focus:border-primary outline-none resize-none"
+                placeholder="Escribe aquí tu pensamiento..."
+              />
+              <button 
+                onClick={() => {
+                  alert('Reflexión guardada en el tejido del tiempo.');
+                  setShowCapsule(false);
+                  setReflection('');
+                }}
+                className="w-full bg-primary text-black py-3 font-black uppercase tracking-widest hover:bg-white transition-all"
+              >
+                Sellar Cápsula
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Navigation Indicators */}
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+        {CRONOS_TIMELINE.map((node) => (
+          <button 
+            key={node.id}
+            onClick={() => {
+              const idx = CRONOS_TIMELINE.findIndex(n => n.id === node.id);
+              scrollRef.current?.scrollTo({ left: idx * scrollRef.current.offsetWidth, behavior: 'smooth' });
+            }}
+            className={`size-3 rounded-full transition-all ${activeNode.id === node.id ? 'bg-primary w-12' : 'bg-white/20 hover:bg-white/40'}`}
+          />
+        ))}
+      </div>
+
+      {/* Soundscape Indicator & Audio Control */}
+      <div className="absolute bottom-8 right-8 z-20 flex items-center gap-4">
+        <audio 
+          ref={audioRef}
+          src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" 
+          loop
+        />
+        <button 
+          onClick={() => setIsMuted(!isMuted)}
+          className="size-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-all"
+        >
+          {isMuted ? <Music size={18} className="opacity-50" /> : <Music size={18} className="animate-pulse" />}
+        </button>
+        <div className="flex flex-col">
+          <span className="text-[10px] font-black text-white uppercase tracking-widest">Ambient: {activeNode.aesthetic.sound}</span>
+          <span className="text-[8px] text-primary uppercase font-bold">Hardcore Punk Nacional</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 
