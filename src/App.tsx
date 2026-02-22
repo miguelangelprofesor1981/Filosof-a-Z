@@ -1,8 +1,8 @@
 import React from 'react';
-import { Home, BookOpen, MessageSquare, Film, Plus, History, Brain, Bolt, Star, Info, Bookmark, ExternalLink, Download, Search, Send, Trash2, Eye, Cloud, Loader2 } from 'lucide-react';
+import { Home, BookOpen, MessageSquare, Film, Plus, History, Brain, Bolt, Star, Info, Bookmark, ExternalLink, Download, Search, Send, Trash2, Eye, Cloud, Loader2, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PhilosophyAI, Message } from './services/geminiService';
-import { FULL_CATALOG, Book, downloadFile } from './services/libraryService';
+import { Book, downloadFile } from './services/libraryService';
 import { CINEMA_CATALOG, PHILOSOPHICAL_PROBLEMS, Video } from './services/cinemaService';
 import ReaderView from './components/ReaderView';
 
@@ -27,6 +27,14 @@ export default function App() {
       aiRef.current = new PhilosophyAI(process.env.GEMINI_API_KEY);
     }
   }, []);
+
+  const handleSendToAI = (text: string) => {
+    const command = `Explícame este fragmento de este autor: "${text}"`;
+    setUserInput(command);
+    setCurrentView('chat');
+    // We don't automatically send it to give the user a chance to see the command
+    // but we could call handleSendMessage() if we wanted immediate response.
+  };
 
   const handleSendMessage = async () => {
     if (!userInput.trim() || !aiRef.current) return;
@@ -62,15 +70,20 @@ export default function App() {
     }
   };
 
-  const addToReadings = async (book: Book) => {
-    if (myReadings.find(b => b.id === book.id)) return;
+  const addToReadings = async (book: Book, format: 'pdf' | 'word' = 'pdf') => {
+    if (downloadProgress[book.id]) return;
+    
+    const url = format === 'word' && book.wordUrl ? book.wordUrl : book.pdfUrl;
     
     try {
-      const localUrl = await downloadFile(book.pdfUrl, (progress) => {
+      const localUrl = await downloadFile(url, (progress) => {
         setDownloadProgress(prev => ({ ...prev, [book.id]: progress }));
       });
       
-      setMyReadings([...myReadings, { ...book, pdfUrl: localUrl }]);
+      if (!myReadings.find(b => b.id === book.id)) {
+        setMyReadings(prev => [...prev, { ...book, pdfUrl: localUrl }]);
+      }
+      
       setDownloadProgress(prev => {
         const next = { ...prev };
         delete next[book.id];
@@ -93,6 +106,7 @@ export default function App() {
             fileUrl={activeReaderBook.pdfUrl} 
             title={activeReaderBook.title} 
             onClose={() => setActiveReaderBook(null)} 
+            onSendToAI={handleSendToAI}
           />
         )}
       </AnimatePresence>
@@ -176,14 +190,7 @@ export default function App() {
           )}
           {currentView === 'cinema' && <CinemaView />}
           {currentView === 'library' && (
-            <LibraryView 
-              searchQuery={searchQuery} 
-              setSearchQuery={setSearchQuery} 
-              onDownload={addToReadings} 
-              myReadings={myReadings}
-              onRead={setActiveReaderBook}
-              downloadProgress={downloadProgress}
-            />
+            <LibraryView />
           )}
         </AnimatePresence>
 
@@ -838,129 +845,95 @@ function VideoCard({ video, onSelect }: any) {
   );
 }
 
-function LibraryView({ searchQuery, setSearchQuery, onDownload, myReadings, onRead, downloadProgress }: any) {
-  const filteredBooks = FULL_CATALOG.filter(book => 
-    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    book.author.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+function LibraryView() {
+  const driveFolderId = '1nV0lSIwVuulm9cSnanOo_LHZC-iCWP2l';
+  const featuredFileId = '1JEKRq0dRDLCFfEWyIQl179jXvmzRJxeV';
+  const driveUrl = `https://drive.google.com/embeddedfolderview?id=${driveFolderId}#list`;
+  const featuredFileUrl = `https://drive.google.com/file/d/${featuredFileId}/preview`;
 
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex-1 overflow-y-auto p-12 custom-scrollbar"
+      className="flex-1 flex flex-col bg-[#121212] relative overflow-y-auto custom-scrollbar"
     >
-      <div className="max-w-4xl mx-auto space-y-12">
-        <div className="text-center space-y-4">
-          <h2 className="text-5xl font-black uppercase tracking-tighter text-white font-serif">
-            Biblioteca <span className="italic text-primary">Radical</span>
-          </h2>
-          <div className="flex flex-col items-center justify-center gap-3">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest">Solo en Español</span>
-              <p className="text-gray-400 font-serif italic">Catálogo descentralizado de pensamiento clásico y contemporáneo.</p>
-            </div>
+      {/* Parchment Pattern Overlay */}
+      <div className="absolute inset-0 parchment-bg opacity-[0.05] pointer-events-none" />
+
+      <div className="flex-1 flex flex-col p-8 md:p-12 space-y-16 relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-6">
+          <div className="space-y-2">
+            <h2 className="text-5xl font-black uppercase tracking-tighter text-white font-serif">
+              Biblioteca <span className="italic text-academic-blue">Z</span>
+            </h2>
+            <p className="text-gray-400 font-serif italic text-lg">Repositorio de pensamiento radical y archivos críticos.</p>
+          </div>
+          
+          <div className="flex gap-4">
             <a 
-              href="https://drive.google.com/drive/folders/1_5cStQJHIKfEVyBhAI6TA8fZQOUQG4mZ?usp=drive_link" 
+              href="https://www.elejandria.com/" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-[10px] text-primary hover:text-white transition-colors flex items-center gap-2 border border-primary/20 px-3 py-1 rounded-full bg-primary/5"
+              className="bg-white/5 border border-white/10 text-white px-6 py-3 rounded-sm font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all flex items-center gap-2"
             >
-              <ExternalLink size={12} />
-              Acceder a mi Drive Personal
+              <Globe size={14} />
+              Navegar en Elejandría
+            </a>
+            <a 
+              href={`https://drive.google.com/drive/folders/${driveFolderId}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-academic-blue text-white px-6 py-3 rounded-sm font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all flex items-center gap-2 shadow-lg"
+            >
+              <ExternalLink size={14} />
+              Abrir Drive
             </a>
           </div>
         </div>
 
-        <div className="relative group">
-          <div className="absolute -inset-0.5 bg-primary rounded blur opacity-10 group-hover:opacity-30 transition"></div>
-          <div className="relative flex items-center bg-punk-black border-2 border-white/10 p-2">
-            <Search className="text-gray-500 ml-4" size={20} />
-            <input 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-transparent border-none focus:ring-0 text-white placeholder:text-gray-700 px-4 py-3 text-lg" 
-              placeholder="Buscar por autor o título (Platón, Kant, Nietzsche...)" 
-              type="text"
+        {/* Featured Document Section (Libro Recomendado) */}
+        <section className="space-y-8">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-8 bg-primary"></div>
+            <h3 className="text-2xl font-black text-white uppercase font-serif italic tracking-tight">Lectura Recomendada</h3>
+          </div>
+          <div className="aspect-video w-full bg-punk-black border border-white/10 rounded-sm overflow-hidden shadow-2xl relative group">
+            <iframe 
+              src={featuredFileUrl} 
+              className="w-full h-full border-none"
+              allow="autoplay"
+              title="Lectura Recomendada"
             />
           </div>
-        </div>
+        </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {filteredBooks.map(book => {
-            const isDownloaded = myReadings.some((b: Book) => b.id === book.id);
-            const progress = downloadProgress[book.id];
-            const isDownloading = progress !== undefined;
+        {/* Drive Folder Iframe Container */}
+        <section className="space-y-8 flex-1 flex flex-col min-h-[700px]">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-8 bg-academic-blue"></div>
+            <h3 className="text-2xl font-black text-white uppercase font-serif italic tracking-tight">Explorador de Archivos</h3>
+          </div>
+          <div className="flex-1 bg-punk-black border border-white/10 rounded-sm overflow-hidden shadow-2xl relative group">
+            <div className="absolute inset-0 bg-academic-blue/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            <iframe 
+              src={driveUrl} 
+              className="w-full h-full border-none grayscale-[0.8] hover:grayscale-0 transition-all duration-700"
+              title="Biblioteca Filosofía Z"
+              allow="autoplay"
+            />
+          </div>
+        </section>
 
-            return (
-              <div key={book.id} className="bg-surface-dark border border-white/10 p-6 flex gap-6 group hover:border-primary transition-all relative overflow-hidden">
-                {isDownloading && (
-                  <div className="absolute bottom-0 left-0 h-1 bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
-                )}
-                
-                <div className="relative shrink-0">
-                  <img src={book.cover} className="w-32 h-44 object-cover grayscale group-hover:grayscale-0 transition-all shadow-xl" alt={book.title} />
-                  {isDownloaded && (
-                    <div className="absolute top-2 right-2 bg-primary text-black p-1 rounded-full shadow-lg">
-                      <Bookmark size={12} />
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex justify-between items-start">
-                      <h4 className="text-2xl font-bold text-white font-serif italic leading-tight">{book.title}</h4>
-                      <span className="text-[10px] text-gray-500 font-mono">{book.year}</span>
-                    </div>
-                    <p className="text-sm text-primary font-bold uppercase tracking-widest mb-3">{book.author}</p>
-                    <p className="text-xs text-gray-400 font-serif italic line-clamp-3 mb-2">{book.description}</p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      <span className="text-[9px] bg-white/5 text-gray-400 px-1.5 py-0.5 rounded border border-white/10">{book.category}</span>
-                      <span className="text-[9px] bg-white/5 text-gray-400 px-1.5 py-0.5 rounded border border-white/10">{book.pages} págs</span>
-                      <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded border border-primary/20 font-bold">ES</span>
-                      <span className={`text-[9px] px-1.5 py-0.5 rounded border font-bold ${
-                        book.source === 'Elejandría' 
-                          ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' 
-                          : book.source === 'CVC'
-                          ? 'bg-orange-500/10 text-orange-400 border-orange-500/20'
-                          : 'bg-green-500/10 text-green-400 border-green-500/20'
-                      }`}>
-                        {book.source}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => onRead(book)}
-                      className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[10px] font-black uppercase tracking-widest bg-white/10 text-white hover:bg-white hover:text-black transition-all border border-white/10"
-                    >
-                      <Eye size={14} />
-                      Lectura Online
-                    </button>
-                    <button 
-                      onClick={() => onDownload(book)}
-                      disabled={isDownloaded || isDownloading}
-                      className={`flex items-center justify-center px-4 py-2.5 transition-all border ${
-                        isDownloaded 
-                          ? 'bg-primary/20 border-primary/50 text-primary cursor-default' 
-                          : isDownloading
-                          ? 'bg-white/5 border-white/10 text-gray-500 cursor-wait'
-                          : 'bg-primary border-primary text-black hover:bg-white hover:border-white'
-                      }`}
-                      aria-label="Descargar"
-                    >
-                      {isDownloading ? <Loader2 size={14} className="animate-spin" /> : isDownloaded ? <Bookmark size={14} /> : <Cloud size={14} />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <div className="flex justify-between items-center text-[10px] uppercase font-black tracking-[0.2em] text-gray-600 border-t border-white/5 pt-6">
+          <div className="flex gap-6">
+            <span className="flex items-center gap-2"><div className="size-1.5 bg-academic-blue rounded-full" /> Sincronización Directa</span>
+            <span className="flex items-center gap-2"><div className="size-1.5 bg-primary rounded-full" /> Acceso Libre</span>
+          </div>
+          <p className="italic font-serif">Filosofía Z - Pensamiento radical desde el Sur</p>
         </div>
       </div>
     </motion.div>
   );
 }
+

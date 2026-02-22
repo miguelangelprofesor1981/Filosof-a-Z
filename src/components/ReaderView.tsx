@@ -1,19 +1,63 @@
 import React from 'react';
-import { Viewer, Worker, ThemeContext } from '@react-pdf-viewer/core';
+import { Viewer, Worker } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
+import { highlightPlugin, MessageIcon, RenderHighlightTargetProps } from '@react-pdf-viewer/highlight';
 import { motion } from 'motion/react';
-import { X, Maximize2, Minimize2, Sun, Moon, Coffee } from 'lucide-react';
+import { X, Maximize2, Minimize2, Sun, Moon, Coffee, MessageSquare } from 'lucide-react';
+
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+import '@react-pdf-viewer/highlight/lib/styles/index.css';
 
 interface ReaderViewProps {
   fileUrl: string;
   title: string;
   onClose: () => void;
+  onSendToAI: (text: string) => void;
 }
 
-export default function ReaderView({ fileUrl, title, onClose }: ReaderViewProps) {
+export default function ReaderView({ fileUrl, title, onClose, onSendToAI }: ReaderViewProps) {
   const [isMinimal, setIsMinimal] = React.useState(false);
   const [readingMode, setReadingMode] = React.useState<'light' | 'dark' | 'sepia'>('dark');
   
+  // Check if we should use Google Docs Viewer (for Word files or if requested)
+  const useGoogleViewer = fileUrl.includes('googleusercontent.com') || fileUrl.includes('googleapis.com') || fileUrl.toLowerCase().endsWith('.docx') || fileUrl.toLowerCase().endsWith('.doc');
+  const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+
+  const renderHighlightTarget = (props: RenderHighlightTargetProps) => (
+    <div
+      style={{
+        background: '#fdf001',
+        cursor: 'pointer',
+        padding: '4px 8px',
+        position: 'absolute',
+        left: `${props.selectionRegion.left}%`,
+        top: `${props.selectionRegion.top + props.selectionRegion.height}%`,
+        zIndex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        color: 'black',
+        fontWeight: 'bold',
+        fontSize: '12px',
+        borderRadius: '4px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+        marginTop: '8px'
+      }}
+      onClick={() => {
+        onSendToAI(props.selectedText);
+        props.toggle();
+      }}
+    >
+      <MessageSquare size={14} />
+      Explícame este fragmento
+    </div>
+  );
+
+  const highlightPluginInstance = highlightPlugin({
+    renderHighlightTarget,
+  });
+
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   const getThemeStyles = () => {
@@ -90,17 +134,27 @@ export default function ReaderView({ fileUrl, title, onClose }: ReaderViewProps)
         </button>
       )}
 
-      {/* PDF Viewer Container */}
+      {/* Viewer Container */}
       <div className={`flex-1 overflow-hidden relative ${isMinimal ? 'p-0' : 'p-4 md:p-8'}`}>
-        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-          <div className="h-full w-full rounded-lg overflow-hidden border border-white/5 shadow-2xl">
-            <Viewer 
-              fileUrl={fileUrl}
-              plugins={[defaultLayoutPluginInstance]}
-              theme={readingMode === 'dark' ? 'dark' : 'light'}
+        {useGoogleViewer ? (
+          <div className="h-full w-full rounded-lg overflow-hidden border border-white/5 shadow-2xl bg-white">
+            <iframe 
+              src={googleViewerUrl} 
+              className="w-full h-full border-none"
+              title={title}
             />
           </div>
-        </Worker>
+        ) : (
+          <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+            <div className="h-full w-full rounded-lg overflow-hidden border border-white/5 shadow-2xl">
+              <Viewer 
+                fileUrl={fileUrl}
+                plugins={[defaultLayoutPluginInstance, highlightPluginInstance]}
+                theme={readingMode === 'dark' ? 'dark' : 'light'}
+              />
+            </div>
+          </Worker>
+        )}
       </div>
 
       {/* Progress Bar (Simulated) */}
