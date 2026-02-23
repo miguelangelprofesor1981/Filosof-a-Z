@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, BookOpen, MessageSquare, Film, Plus, History, Brain, Bolt, Star, Info, Bookmark, ExternalLink, Download, Search, Send, Trash2, Eye, Cloud, Loader2, Globe, Clock, Music, Zap, MessageCircle, MapPin, Sparkles } from 'lucide-react';
+import { Home, BookOpen, MessageSquare, Film, Plus, History, Brain, Bolt, Star, Info, Bookmark, ExternalLink, Download, Search, Send, Trash2, Eye, Cloud, Loader2, Globe, Clock, Music, Zap, MessageCircle, MapPin, Sparkles, Coffee, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PhilosophyAI, Message } from './services/geminiService';
 import { Book, downloadFile } from './services/libraryService';
@@ -336,11 +336,12 @@ export default function App() {
               t={t}
               language={language}
               setLanguage={setLanguage}
+              onNavigate={setCurrentView}
             />
           )}
-          {currentView === 'cinema' && <CinemaView t={t} />}
+          {currentView === 'cinema' && <CinemaView t={t} onNavigate={setCurrentView} />}
           {currentView === 'library' && (
-            <LibraryView t={t} />
+            <LibraryView t={t} onNavigate={setCurrentView} />
           )}
           {currentView === 'cronos' && (
             <CronosView t={t} onNavigate={setCurrentView} />
@@ -501,6 +502,94 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead, t }: { o
         </a>
       </div>
 
+      {/* Filosofía Z Manifesto Section */}
+      <section className="mb-16 bg-white/5 border border-white/10 p-8 md:p-12 rounded-sm">
+        <div className="max-w-3xl mx-auto space-y-8">
+          <div className="space-y-2">
+            <h3 className="text-4xl font-black text-white uppercase tracking-tighter font-serif italic">
+              ¿Qué es <span className="text-primary">Filosofía Z</span>?
+            </h3>
+            <p className="text-primary font-mono text-sm uppercase tracking-widest">El pensamiento crítico en la era del scroll infinito</p>
+          </div>
+          
+          <div className="space-y-6 text-gray-300 font-serif text-lg leading-relaxed italic">
+            <p>
+              "Filosofía Z no es un archivo de ideas muertas, es un ecosistema vivo. En un siglo XXI saturado de estímulos, nace este espacio diseñado por <span className="text-white font-bold not-italic">Miguel Ángel Romero</span> para las nuevas generaciones que buscan respuestas sin renunciar a la interactividad."
+            </p>
+            <p>
+              Aquí, la filosofía abandona el pedestal de los libros empolvados para integrarse en una <span className="text-white font-bold not-italic">Biblioteca</span> digital, una <span className="text-white font-bold not-italic">Videoteca</span> de cine educativo, un <span className="text-white font-bold not-italic">Chat AI</span> de debate dialéctico, y una <span className="text-white font-bold not-italic">Línea del Tiempo Inmersiva</span>.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6 border-t border-white/10">
+              <div>
+                <h4 className="text-primary font-black uppercase text-xs mb-2">¿Para quién?</h4>
+                <p className="text-sm">Para estudiantes, docentes y mentes curiosas que entienden que el conocimiento hoy es multimedia o no es.</p>
+              </div>
+              <div>
+                <h4 className="text-primary font-black uppercase text-xs mb-2">¿Por qué?</h4>
+                <p className="text-sm">Porque pensar es el acto más rebelde y entretenido que existe.</p>
+              </div>
+              <div>
+                <h4 className="text-primary font-black uppercase text-xs mb-2">¿Para qué?</h4>
+                <p className="text-sm">Para dotar a la juventud de herramientas lógicas frente a la desinformación y transformar el asombro en acción.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Sustainability Section */}
+      <footer className="pt-12 border-t border-white/5 space-y-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="space-y-4 max-w-2xl">
+            <p className="text-[11px] text-gray-500 uppercase tracking-widest leading-relaxed opacity-70">
+              Este proyecto se mantiene gracias al pensamiento compartido y al apoyo voluntario de su comunidad. Si encuentras valor en este espacio y deseas colaborar con su mantenimiento:
+            </p>
+            
+            <div className="flex flex-wrap gap-6">
+              <div className="space-y-1">
+                <span className="text-[10px] text-gray-600 uppercase font-black">Donaciones (Pesos ARG)</span>
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[9px] font-bold">MP</span>
+                  <span>Alias: <span className="text-white font-mono">elprofedefilosofia</span></span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] text-gray-600 uppercase font-black">Donaciones (USD / Exterior)</span>
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <span>Alias: <span className="text-white font-mono">REZO.BIGOTE.BAR</span></span>
+                  <span className="text-[10px] opacity-50">(Miguel Ángel Romero)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative group">
+            <button 
+              className="flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-3 rounded-sm hover:bg-primary hover:text-black transition-all group"
+              onClick={() => {
+                const el = document.getElementById('donation-info');
+                el?.classList.toggle('hidden');
+              }}
+            >
+              <Coffee size={18} className="group-hover:animate-bounce" />
+              <span className="text-xs font-black uppercase tracking-widest">Sostener el proyecto</span>
+            </button>
+            <div id="donation-info" className="hidden absolute bottom-full right-0 mb-4 w-72 bg-surface-dark border border-primary p-4 shadow-2xl z-50">
+              <div className="space-y-1 mb-3 border-b border-white/10 pb-2">
+                <p className="text-[10px] text-white font-bold uppercase tracking-widest">Datos del Propietario</p>
+                <p className="text-[10px] text-gray-400">Miguel Ángel Romero</p>
+                <p className="text-[10px] text-gray-400">CUIL: 20-28637042-2</p>
+              </div>
+              <div className="space-y-1 mb-3">
+                <p className="text-[10px] text-white font-bold uppercase tracking-widest">Transferencia Bancaria</p>
+                <p className="text-[10px] text-gray-400">CBU: 0140025004713650648808</p>
+                <p className="text-[10px] text-gray-400">SWIFT: PRBAARBAXXX</p>
+              </div>
+              <p className="text-[10px] text-gray-400 italic">Gracias por apoyar la educación libre y el pensamiento crítico.</p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </motion.div>
   );
 }
@@ -563,7 +652,7 @@ function ModuleCard({ title, subtitle, tag, footer, image, isAI, progress, onCli
   );
 }
 
-function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, language, setLanguage }: any) {
+function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, language, setLanguage, onNavigate }: any) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -582,6 +671,13 @@ function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, lang
       <div className="flex-1 flex flex-col bg-surface-dark/50 overflow-hidden">
         <header className="flex items-center justify-between px-8 py-5 border-b border-white/10 bg-punk-black/95 z-20 shadow-lg">
           <div className="flex items-center gap-5">
+            <button 
+              onClick={() => onNavigate('dashboard')}
+              className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-all"
+              title="Volver al Inicio"
+            >
+              <ArrowLeft size={20} />
+            </button>
             <div className="relative">
               <div className="size-14 rounded bg-primary overflow-hidden border-2 border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] rotate-2">
                 <img 
@@ -795,7 +891,7 @@ function ChatMessage({ role, content, reference, isTyping, t }: any) {
   );
 }
 
-function CinemaView({ t }: { t: any }) {
+function CinemaView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }) {
   const [activeProblem, setActiveProblem] = React.useState(PHILOSOPHICAL_PROBLEMS[0]);
   const [selectedVideo, setSelectedVideo] = React.useState<Video | null>(null);
 
@@ -870,14 +966,31 @@ function CinemaView({ t }: { t: any }) {
           <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent" />
         </div>
         <div className="relative z-10 max-w-4xl space-y-6">
+          <button 
+            onClick={() => onNavigate('dashboard')}
+            className="mb-4 p-3 bg-white/5 border border-white/10 rounded-sm text-gray-400 hover:text-white hover:border-primary transition-all flex items-center gap-2 group"
+          >
+            <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+            <span className="text-xs font-black uppercase tracking-widest">Volver al Inicio</span>
+          </button>
           <div className="flex items-center gap-3 text-primary mb-2">
             <span className="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase tracking-wider transform -rotate-2">{t.cinema_featured}</span>
             <div className="h-px w-12 bg-primary"></div>
           </div>
-          <h2 className="text-6xl md:text-8xl font-black leading-[0.9] text-white italic tracking-tighter">
-            {t.cinema_title.split(' ')[0]} <br />
-            <span className="text-primary font-serif not-italic">{t.cinema_title.split(' ')[1]}</span> {t.cinema_title.split(' ').slice(2).join(' ')}
-          </h2>
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+            <div className="size-24 md:size-32 shrink-0 border-2 border-primary rounded-full overflow-hidden shadow-[0_0_30px_rgba(253,240,1,0.2)] bg-punk-black">
+              <img 
+                src="CineSofia.png" 
+                alt="CineSofia Avatar" 
+                className="w-full h-full object-cover"
+                onError={(e) => { e.currentTarget.src = "https://picsum.photos/seed/cinesofia/200/200?grayscale"; }}
+              />
+            </div>
+            <h2 className="text-6xl md:text-8xl font-black leading-[0.9] text-white italic tracking-tighter">
+              {t.cinema_title.split(' ')[0]} <br />
+              <span className="text-primary font-serif not-italic">{t.cinema_title.split(' ')[1]}</span> {t.cinema_title.split(' ').slice(2).join(' ')}
+            </h2>
+          </div>
           <p className="text-lg md:text-xl text-slate-300 max-w-xl font-light italic leading-relaxed border-l-2 border-primary pl-4">
             {t.cinema_subtitle}
           </p>
@@ -915,6 +1028,42 @@ function CinemaView({ t }: { t: any }) {
               allowFullScreen
               title="Filosofía Z Featured Film"
             />
+          </div>
+        </section>
+
+        {/* Odysee Channel Banner */}
+        <section className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-white/10 p-8 rounded-sm flex flex-col md:flex-row items-center gap-8 group hover:border-primary transition-all">
+          <a 
+            href="https://odysee.com/@ElProfeDeFilosofia1981:e" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="shrink-0 w-full md:w-64 aspect-video overflow-hidden border-2 border-white/20 group-hover:border-primary transition-all shadow-2xl relative"
+          >
+            <img 
+              src="Odisea.jpg" 
+              alt="Canal Odysee" 
+              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+              onError={(e) => { e.currentTarget.src = "https://picsum.photos/seed/odysee/400/225?grayscale"; }}
+            />
+            <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <ExternalLink size={40} className="text-white drop-shadow-lg" />
+            </div>
+          </a>
+          <div className="space-y-4 flex-1">
+            <h3 className="text-3xl font-black text-white uppercase font-serif italic tracking-tight">
+              ¿Quieres profundizar más?
+            </h3>
+            <p className="text-gray-300 font-serif italic text-lg leading-relaxed max-w-2xl">
+              Te invitamos a visitar el canal de <span className="text-primary font-bold not-italic">"El Profe de Filosofía"</span> en Odysee para reflexionar sobre más contenidos del séptimo arte y el pensamiento crítico.
+            </p>
+            <a 
+              href="https://odysee.com/@ElProfeDeFilosofia1981:e"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 bg-primary text-black px-6 py-3 font-black text-xs uppercase tracking-widest hover:bg-white transition-all"
+            >
+              Visitar Canal en Odysee <ExternalLink size={16} />
+            </a>
           </div>
         </section>
 
@@ -979,7 +1128,7 @@ function VideoCard({ video, onSelect }: any) {
   );
 }
 
-function LibraryView({ t }: { t: any }) {
+function LibraryView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }) {
   const driveFolderId = '1nV0lSIwVuulm9cSnanOo_LHZC-iCWP2l';
   const featuredFileId = '1JEKRq0dRDLCFfEWyIQl179jXvmzRJxeV';
   const driveUrl = `https://drive.google.com/embeddedfolderview?id=${driveFolderId}#list`;
@@ -996,12 +1145,21 @@ function LibraryView({ t }: { t: any }) {
       <div className="absolute inset-0 parchment-bg opacity-[0.05] pointer-events-none" />
 
       <div className="flex-1 flex flex-col p-8 md:p-12 space-y-16 relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-6">
-          <div className="space-y-2">
-            <h2 className="text-5xl font-black uppercase tracking-tighter text-white font-serif">
-              {t.library_title.split(' ')[0]} <span className="italic text-academic-blue">{t.library_title.split(' ')[1]}</span>
-            </h2>
-            <p className="text-gray-400 font-serif italic text-lg">{t.library_subtitle}</p>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+          <div className="flex items-center gap-6">
+            <button 
+              onClick={() => onNavigate('dashboard')}
+              className="p-3 bg-white/5 border border-white/10 rounded-sm text-gray-400 hover:text-white hover:border-primary transition-all"
+              title="Volver al Inicio"
+            >
+              <ArrowLeft size={24} />
+            </button>
+            <div className="space-y-2">
+              <h2 className="text-5xl font-black uppercase tracking-tighter text-white font-serif">
+                {t.library_title.split(' ')[0]} <span className="italic text-academic-blue">{t.library_title.split(' ')[1]}</span>
+              </h2>
+              <p className="text-gray-400 font-serif italic text-lg">{t.library_subtitle}</p>
+            </div>
           </div>
           
           <div className="flex gap-4">
@@ -1064,18 +1222,15 @@ function LibraryView({ t }: { t: any }) {
 
 function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
-  const [activeNode, setActiveNode] = React.useState<CronosNode>(CRONOS_TIMELINE.find(n => n.id === 'platon') || CRONOS_TIMELINE[0]);
+  const [activeNode, setActiveNode] = React.useState<CronosNode>(CRONOS_TIMELINE[0]);
   const [isFrozen, setIsFrozen] = React.useState(false);
   const [showChat, setShowChat] = React.useState<string | null>(null);
-  const [relicsFound, setRelicsFound] = React.useState<string[]>([]);
-  const [showCapsule, setShowCapsule] = React.useState(false);
-  const [reflection, setReflection] = React.useState('');
-  const [isMuted, setIsMuted] = React.useState(false);
+  const [isMuted, setIsMuted] = React.useState(true);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
   React.useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = 0.3;
+      audioRef.current.volume = 0.2;
       if (!isMuted) {
         audioRef.current.play().catch(e => console.log("Autoplay blocked"));
       } else {
@@ -1095,12 +1250,6 @@ function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
     const index = Math.round(scrollLeft / width);
     if (CRONOS_TIMELINE[index] && CRONOS_TIMELINE[index].id !== activeNode.id) {
       setActiveNode(CRONOS_TIMELINE[index]);
-    }
-  };
-
-  const findRelic = (nodeId: string) => {
-    if (!relicsFound.includes(nodeId)) {
-      setRelicsFound([...relicsFound, nodeId]);
     }
   };
 
@@ -1134,36 +1283,19 @@ function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
 
       {/* Header */}
       <div className="relative z-20 p-8 flex justify-between items-start">
-        <div>
-          <h2 className="text-4xl font-black text-white uppercase font-serif italic tracking-tighter">
-            Cronos <span className="text-primary text-xl not-italic ml-2">v1.0</span>
-          </h2>
-          <p className="text-xs text-primary font-mono mt-1 tracking-widest uppercase">Zeitgeist Explorer // {activeNode.year}</p>
-        </div>
-        <div className="flex gap-4">
-          <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-sm group cursor-help">
-            <div className={`size-8 rounded-full border-2 border-primary overflow-hidden transition-all duration-500 ${relicsFound.length > 2 ? 'scale-110 shadow-[0_0_15px_#fdf001]' : ''}`}>
-              <img 
-                src={`https://picsum.photos/seed/avatar-${relicsFound.length}/100/100?grayscale`} 
-                alt="Avatar Evolutivo" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] font-black text-white uppercase tracking-widest">Avatar Nivel {relicsFound.length + 1}</span>
-              <span className="text-[8px] text-primary uppercase font-bold">{relicsFound.length > 2 ? 'Sabio' : 'Iniciado'}</span>
-            </div>
-          </div>
+        <div className="flex items-center gap-6">
           <button 
-            onClick={() => setShowCapsule(true)}
-            className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-sm hover:bg-primary hover:text-black transition-all"
+            onClick={() => onNavigate('dashboard')}
+            className="p-3 bg-white/5 border border-white/10 rounded-sm text-gray-400 hover:text-white hover:border-primary transition-all"
+            title="Volver al Inicio"
           >
-            <MapPin size={16} />
-            <span className="text-[10px] font-black uppercase tracking-widest">Cápsula del Tiempo</span>
+            <ArrowLeft size={24} />
           </button>
-          <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-sm">
-            <Sparkles className="text-primary" size={16} />
-            <span className="text-[10px] font-black text-white uppercase tracking-widest">Reliquias: {relicsFound.length}/{CRONOS_TIMELINE.filter(n => n.relic).length}</span>
+          <div>
+            <h2 className="text-4xl font-black text-white uppercase font-serif italic tracking-tighter">
+              Cronos <span className="text-primary text-xl not-italic ml-2">v1.0</span>
+            </h2>
+            <p className="text-xs text-primary font-mono mt-1 tracking-widest uppercase">Línea del Tiempo Educativa // {activeNode.year}</p>
           </div>
         </div>
       </div>
@@ -1211,19 +1343,6 @@ function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
                       <MessageCircle size={18} /> Chat de Pasillo
                     </button>
                   )}
-                  {node.interactive?.type === 'action' && (
-                    <button 
-                      onClick={() => {
-                        if (node.interactive?.content.effect === 'freeze') {
-                          setIsFrozen(true);
-                          setTimeout(() => setIsFrozen(false), 3000);
-                        }
-                      }}
-                      className="bg-primary text-black px-6 py-3 rounded-sm font-black text-xs uppercase tracking-widest hover:bg-white transition-all flex items-center gap-2"
-                    >
-                      <Zap size={18} /> {node.interactive.content.label}
-                    </button>
-                  )}
                   <button 
                     onClick={() => onNavigate('library')}
                     className="bg-transparent border border-white/30 text-white px-6 py-3 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-white/5 transition-all flex items-center gap-2"
@@ -1248,15 +1367,6 @@ function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
                       referrerPolicy="no-referrer"
                     />
                   </div>
-                  
-                  {node.relic && !relicsFound.includes(node.id) && (
-                    <button 
-                      onClick={() => findRelic(node.id)}
-                      className="absolute bottom-0 right-0 size-16 bg-primary text-black rounded-full flex items-center justify-center shadow-2xl animate-bounce border-4 border-punk-black hover:scale-110 transition-transform"
-                    >
-                      <Star size={24} />
-                    </button>
-                  )}
                 </motion.div>
               </div>
             </div>
@@ -1299,49 +1409,6 @@ function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
         )}
       </AnimatePresence>
 
-      {/* Cápsula del Tiempo Modal */}
-      <AnimatePresence>
-        {showCapsule && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6"
-          >
-            <div className="bg-surface-dark border-2 border-primary p-8 max-w-lg w-full space-y-6 relative overflow-hidden">
-              <div className="absolute top-0 right-0 opacity-5 pointer-events-none select-none text-[60px] font-black leading-none text-white rotate-12 translate-x-1/4 -translate-y-1/4">CAPSULE</div>
-              <button 
-                onClick={() => setShowCapsule(false)}
-                className="absolute -top-4 -right-4 size-10 bg-primary text-black flex items-center justify-center font-black rounded-sm"
-              >
-                X
-              </button>
-              <div className="flex items-center gap-3 mb-4">
-                <MapPin className="text-primary" />
-                <h4 className="text-xl font-black text-white uppercase font-serif italic">Cápsula del Tiempo</h4>
-              </div>
-              <p className="text-sm text-gray-400 font-serif italic">Deja una reflexión para el futuro. ¿Qué idea de esta época debería perdurar?</p>
-              <textarea 
-                value={reflection}
-                onChange={(e) => setReflection(e.target.value)}
-                className="w-full h-32 bg-punk-black border border-white/20 p-4 text-white font-serif italic focus:border-primary outline-none resize-none"
-                placeholder="Escribe aquí tu pensamiento..."
-              />
-              <button 
-                onClick={() => {
-                  alert('Reflexión guardada en el tejido del tiempo.');
-                  setShowCapsule(false);
-                  setReflection('');
-                }}
-                className="w-full bg-primary text-black py-3 font-black uppercase tracking-widest hover:bg-white transition-all"
-              >
-                Sellar Cápsula
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Navigation Indicators */}
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-3">
         {CRONOS_TIMELINE.map((node) => (
@@ -1356,7 +1423,7 @@ function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
         ))}
       </div>
 
-      {/* Soundscape Indicator & Audio Control */}
+      {/* Audio Control */}
       <div className="absolute bottom-8 right-8 z-20 flex items-center gap-4">
         <audio 
           ref={audioRef}
@@ -1366,13 +1433,10 @@ function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
         <button 
           onClick={() => setIsMuted(!isMuted)}
           className="size-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-all"
+          title={isMuted ? "Activar Sonido" : "Silenciar"}
         >
           {isMuted ? <Music size={18} className="opacity-50" /> : <Music size={18} className="animate-pulse" />}
         </button>
-        <div className="flex flex-col">
-          <span className="text-[10px] font-black text-white uppercase tracking-widest">Ambient: {activeNode.aesthetic.sound}</span>
-          <span className="text-[8px] text-primary uppercase font-bold">Hardcore Punk Nacional</span>
-        </div>
       </div>
     </motion.div>
   );

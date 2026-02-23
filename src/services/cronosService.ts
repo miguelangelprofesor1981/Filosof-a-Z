@@ -29,7 +29,7 @@ export const CRONOS_TIMELINE: CronosNode[] = [
     aesthetic: {
       bg: 'https://images.unsplash.com/photo-1515704089429-fd06e66ce3e8?q=80&w=2000&auto=format&fit=crop',
       color: '#fdf001',
-      sound: 'Hardcore Punk: Distorsión Primigenia',
+      sound: 'Distorsión Primigenia',
       icon: 'Waves',
       brightness: 0.9
     },
@@ -53,16 +53,9 @@ export const CRONOS_TIMELINE: CronosNode[] = [
     aesthetic: {
       bg: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=2000&auto=format&fit=crop',
       color: '#00ff88',
-      sound: 'Punk Nacional: Bajo Galopante',
+      sound: 'Bajo Galopante',
       icon: 'Zap',
       brightness: 1.1
-    },
-    interactive: {
-      type: 'butterfly',
-      content: {
-        futureLink: 'Física Cuántica',
-        text: 'La búsqueda del constituyente último de la materia que inició Demócrito culmina en la complejidad de la mecánica cuántica actual.'
-      }
     }
   },
   {
@@ -74,16 +67,23 @@ export const CRONOS_TIMELINE: CronosNode[] = [
     aesthetic: {
       bg: 'https://images.unsplash.com/photo-1503152394-c571994fd383?q=80&w=2000&auto=format&fit=crop',
       color: '#00d4ff',
-      sound: 'Hardcore: Feedback de Caverna',
+      sound: 'Feedback de Caverna',
       icon: 'Sparkles',
       brightness: 0.9
-    },
-    interactive: {
-      type: 'butterfly',
-      content: {
-        futureLink: 'Física Cuántica',
-        text: 'La idea de que la realidad fundamental no es material influyó en cómo entendemos hoy los campos cuánticos.'
-      }
+    }
+  },
+  {
+    id: 'aquino',
+    year: '1265',
+    title: 'Razón y Fe',
+    philosopher: 'Tomás de Aquino',
+    description: 'La síntesis entre la filosofía aristotélica y la teología cristiana. Las cinco vías para demostrar la existencia de Dios.',
+    aesthetic: {
+      bg: 'https://images.unsplash.com/photo-1548013146-72479768bbaa?q=80&w=2000&auto=format&fit=crop',
+      color: '#d4af37',
+      sound: 'Eco Monástico',
+      icon: 'Book',
+      brightness: 0.8
     }
   },
   {
@@ -95,16 +95,9 @@ export const CRONOS_TIMELINE: CronosNode[] = [
     aesthetic: {
       bg: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=2000&auto=format&fit=crop',
       color: '#ffffff',
-      sound: 'Punk: Metrónomo Acelerado',
+      sound: 'Metrónomo Acelerado',
       icon: 'Zap',
       brightness: 1.0
-    },
-    interactive: {
-      type: 'action',
-      content: {
-        label: 'Dudar de Todo',
-        effect: 'freeze'
-      }
     }
   },
   {
@@ -116,7 +109,7 @@ export const CRONOS_TIMELINE: CronosNode[] = [
     aesthetic: {
       bg: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop',
       color: '#fdf001',
-      sound: 'Hardcore: Proclamación Radical',
+      sound: 'Proclamación Radical',
       icon: 'Brain',
       brightness: 1.1
     }
@@ -130,11 +123,10 @@ export const CRONOS_TIMELINE: CronosNode[] = [
     aesthetic: {
       bg: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&w=2000&auto=format&fit=crop',
       color: '#ff4444',
-      sound: 'Punk Nacional: Grito de Poder',
+      sound: 'Grito de Poder',
       icon: 'Bolt',
       brightness: 0.7
-    },
-    relic: 'La partitura oculta: Nietzsche creía que sin música la vida sería un error.'
+    }
   },
   {
     id: 'sartre',
@@ -145,9 +137,23 @@ export const CRONOS_TIMELINE: CronosNode[] = [
     aesthetic: {
       bg: 'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?q=80&w=2000&auto=format&fit=crop',
       color: '#888888',
-      sound: 'Hardcore: Resistencia Urbana',
+      sound: 'Resistencia Urbana',
       icon: 'Info',
       brightness: 0.5
+    }
+  },
+  {
+    id: 'han',
+    year: '2010',
+    title: 'La Sociedad del Cansancio',
+    philosopher: 'Byung-Chul Han',
+    description: 'El paso de la sociedad disciplinaria a la sociedad del rendimiento. El sujeto se explota a sí mismo creyendo que se está realizando.',
+    aesthetic: {
+      bg: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2000&auto=format&fit=crop',
+      color: '#00ffcc',
+      sound: 'Pulso Digital',
+      icon: 'Smartphone',
+      brightness: 0.9
     }
   }
 ];
