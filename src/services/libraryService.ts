@@ -1,83 +1,93 @@
-import { fetchDriveFiles, DriveFile, cleanTitle } from './googleDriveService';
 
 export interface Book {
   id: string;
   title: string;
-  author: string;
-  authorBio?: string;
-  description: string;
-  pdfUrl: string;
+  driveId: string;
+  author?: string;
+  category?: string;
   wordUrl?: string;
-  cover: string;
-  category: 'Filosofía' | 'Literatura';
-  source: 'Elejandría' | 'CVC' | 'Drive Personal';
-  year?: string;
-  pages?: number;
-  snippet?: string;
-  nationality?: string;
-  period?: 'Clásico' | 'Moderno' | 'Contemporáneo';
-  theme?: string;
-  rating: number;
-  views: number;
-  downloads: number;
-  featuredWorks?: string[];
+  pdfUrl?: string;
 }
 
-/**
- * Infers metadata from author name.
- */
-function getAuthorMetadata(author: string) {
-  const name = author.toLowerCase();
-  if (name.includes('althusser')) return { nationality: 'Francés', period: 'Contemporáneo', theme: 'Marxismo', category: 'Filosofía' };
-  if (name.includes('cruz')) return { nationality: 'Mexicana', period: 'Moderno', theme: 'Poesía', category: 'Literatura' };
-  if (name.includes('platón')) return { nationality: 'Griego', period: 'Clásico', theme: 'Metafísica', category: 'Filosofía' };
-  if (name.includes('kant')) return { nationality: 'Alemán', period: 'Moderno', theme: 'Ética', category: 'Filosofía' };
-  if (name.includes('nietzsche')) return { nationality: 'Alemán', period: 'Contemporáneo', theme: 'Existencialismo', category: 'Filosofía' };
-  if (name.includes('cervantes')) return { nationality: 'Español', period: 'Moderno', theme: 'Novela', category: 'Literatura' };
-  
-  return { nationality: 'Desconocida', period: 'Contemporáneo', theme: 'General', category: 'Filosofía' };
-}
-
-/**
- * Maps DriveFile to Book interface.
- */
-export function mapDriveFileToBook(file: DriveFile): Book {
-  const rawAuthor = file.description?.split('\n')[0] || 'Romero, Miguel Ángel';
-  const cleanAuthor = rawAuthor.replace(/_/g, ' ');
-  const metadata = getAuthorMetadata(cleanAuthor);
-
-  return {
-    id: file.id,
-    title: cleanTitle(file.name),
-    author: cleanAuthor,
-    authorBio: `Contexto biográfico de ${cleanAuthor}: Pensador influyente en el ámbito de la ${metadata.theme}. Su obra se sitúa en el periodo ${metadata.period}, aportando una visión crítica y radical que resuena en la cátedra de Filosofía Z.`,
-    description: file.description || 'Documento de la cátedra de Filosofía Z.',
-    pdfUrl: `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`,
-    wordUrl: file.mimeType.includes('word') ? `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media` : undefined,
-    cover: file.thumbnailLink || `https://picsum.photos/seed/${file.id}/400/600`,
-    category: metadata.category as any,
-    source: 'Drive Personal',
-    snippet: file.description,
-    nationality: metadata.nationality,
-    period: metadata.period as any,
-    theme: metadata.theme,
-    rating: Math.floor(Math.random() * 2) + 4, // 4-5 stars
-    views: Math.floor(Math.random() * 1000) + 100,
-    downloads: Math.floor(Math.random() * 500) + 50,
-    featuredWorks: [cleanTitle(file.name)]
-  };
-}
-
-/**
- * Simulates the download process.
- */
-export async function downloadFile(url: string, onProgress: (p: number) => void, accessToken?: string): Promise<string> {
-  for (let i = 0; i <= 100; i += 10) {
-    onProgress(i);
-    await new Promise(resolve => setTimeout(resolve, 150));
+export const LIBRARY_CATALOG: Book[] = [
+  {
+    id: '1',
+    title: 'El Existencialismo es un Humanismo',
+    author: 'Jean-Paul Sartre',
+    driveId: '1JEKRq0dRDLCFfEWyIQl179jXvmzRJxeV',
+    category: 'Existencialismo'
+  },
+  {
+    id: '2',
+    title: 'Así habló Zaratustra',
+    author: 'Friedrich Nietzsche',
+    driveId: '1nV0lSIwVuulm9cSnanOo_LHZC-iCWP2l', // Using folder ID as placeholder if file ID unknown
+    category: 'Nihilismo'
+  },
+  {
+    id: '3',
+    title: 'La Sociedad del Cansancio',
+    author: 'Byung-Chul Han',
+    driveId: '1JEKRq0dRDLCFfEWyIQl179jXvmzRJxeV',
+    category: 'Contemporánea'
+  },
+  {
+    id: '4',
+    title: 'Vigilar y Castigar',
+    author: 'Michel Foucault',
+    driveId: '1nV0lSIwVuulm9cSnanOo_LHZC-iCWP2l',
+    category: 'Poder'
+  },
+  {
+    id: '5',
+    title: 'Crítica de la Razón Pura',
+    author: 'Immanuel Kant',
+    driveId: '1JEKRq0dRDLCFfEWyIQl179jXvmzRJxeV',
+    category: 'Idealismo'
+  },
+  {
+    id: '6',
+    title: 'El Banquete',
+    author: 'Platón',
+    driveId: '1nV0lSIwVuulm9cSnanOo_LHZC-iCWP2l',
+    category: 'Clásica'
   }
+];
+
+export const getThumbnailUrl = (driveId: string) => {
+  return `https://drive.google.com/thumbnail?id=${driveId}&sz=w400`;
+};
+
+export const getReadUrl = (driveId: string) => {
+  return `https://drive.google.com/file/d/${driveId}/view`;
+};
+
+export const getDownloadUrl = (driveId: string) => {
+  return `https://drive.google.com/uc?export=download&id=${driveId}`;
+};
+
+export async function downloadFile(url: string, onProgress: (p: number) => void): Promise<string> {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Download failed');
   
-  // In a real app, we would fetch the blob with the access token
-  // For now, we'll return the URL directly or a blob URL if we were actually downloading
-  return url;
+  const contentLength = response.headers.get('content-length');
+  const total = contentLength ? parseInt(contentLength, 10) : 0;
+  let loaded = 0;
+
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error('ReadableStream not supported');
+
+  const chunks: Uint8Array[] = [];
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    loaded += value.length;
+    if (total > 0) {
+      onProgress(Math.round((loaded / total) * 100));
+    }
+  }
+
+  const blob = new Blob(chunks);
+  return URL.createObjectURL(blob);
 }

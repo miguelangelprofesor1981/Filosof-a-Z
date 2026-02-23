@@ -23,14 +23,17 @@ export interface DriveFile {
  */
 export function cleanTitle(name: string): string {
   // Remove extensions
-  let title = name.replace(/\.(pdf|docx|doc|txt)$/i, '');
+  let title = name.replace(/\.(pdf|docx|doc|txt|epub|mp4|mov|avi)$/i, '');
   
-  // Remove common prefixes like "Filosofía Estética - "
-  title = title.replace(/^(Filosofía|Antropología|Introducción)\s+[^-\n]*-\s*/i, '');
+  // Remove common prefixes like "Filosofía Estética - " or "01 - " or "A - "
+  title = title.replace(/^([A-Z\d]+[\s.-]+|Filosofía|Antropología|Introducción|Cátedra|Libro|Texto|Documento)\s*[^-\n]*-\s*/i, '');
   
-  // Remove specific patterns requested
-  title = title.replace(/Sobre gustos y disgustos/i, 'Sobre gustos y disgustos');
+  // Remove anything in brackets or parentheses at the end (often metadata)
+  title = title.replace(/\s*[\[\(].*?[\]\)]\s*$/g, '');
   
+  // Remove underscores and replace with spaces
+  title = title.replace(/_/g, ' ');
+
   return title.trim();
 }
 
@@ -68,7 +71,8 @@ export async function fetchDriveFiles(accessToken?: string): Promise<DriveFile[]
     return [];
   }
 
-  const q = `'${FOLDER_ID}' in parents and (mimeType = 'application/pdf' or mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') and trashed = false`;
+  // Include PDF, Word, and common video formats
+  const q = `'${FOLDER_ID}' in parents and (mimeType = 'application/pdf' or mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' or mimeType = 'video/mp4' or mimeType = 'video/quicktime') and trashed = false`;
   const fields = 'files(id, name, mimeType, thumbnailLink, description, webViewLink, webContentLink)';
   
   const url = new URL('https://www.googleapis.com/drive/v3/files');

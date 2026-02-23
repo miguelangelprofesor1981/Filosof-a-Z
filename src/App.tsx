@@ -955,6 +955,16 @@ function CinemaView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
         )}
       </AnimatePresence>
 
+      <div className="absolute top-8 left-8 z-50">
+        <button 
+          onClick={() => onNavigate('dashboard')}
+          className="p-3 bg-white/5 border border-white/10 rounded-sm text-gray-400 hover:text-white hover:border-primary transition-all shadow-xl backdrop-blur-md"
+          title="Volver al Inicio"
+        >
+          <ArrowLeft size={24} />
+        </button>
+      </div>
+
       <section className="relative w-full h-[70vh] flex items-end pb-24 px-12 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
@@ -966,13 +976,6 @@ function CinemaView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
           <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent" />
         </div>
         <div className="relative z-10 max-w-4xl space-y-6">
-          <button 
-            onClick={() => onNavigate('dashboard')}
-            className="mb-4 p-3 bg-white/5 border border-white/10 rounded-sm text-gray-400 hover:text-white hover:border-primary transition-all flex items-center gap-2 group"
-          >
-            <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-xs font-black uppercase tracking-widest">Volver al Inicio</span>
-          </button>
           <div className="flex items-center gap-3 text-primary mb-2">
             <span className="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase tracking-wider transform -rotate-2">{t.cinema_featured}</span>
             <div className="h-px w-12 bg-primary"></div>
