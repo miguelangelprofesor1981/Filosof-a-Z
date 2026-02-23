@@ -1187,9 +1187,9 @@ function LibraryView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void 
 
         {/* Featured Document Section (Libro Recomendado) */}
         <section className="space-y-8">
-          <div className="flex items-center gap-3">
-            <div className="w-1.5 h-8 bg-primary"></div>
-            <h3 className="text-2xl font-black text-white uppercase font-serif italic tracking-tight">{t.library_recommended}</h3>
+          <div className="flex items-center gap-4">
+            <div className="w-2 h-10 bg-primary shadow-[0_0_15px_rgba(253,240,1,0.3)]"></div>
+            <h3 className="text-3xl md:text-4xl font-black text-white uppercase font-serif italic tracking-tighter">{t.library_recommended}</h3>
           </div>
           <div className="aspect-video w-full bg-punk-black border border-white/10 rounded-sm overflow-hidden shadow-2xl relative group">
             <iframe 
@@ -1202,19 +1202,30 @@ function LibraryView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void 
         </section>
 
         {/* Drive Folder Iframe Container */}
-        <section className="space-y-8 flex-1 flex flex-col min-h-[700px]">
-          <div className="flex items-center gap-3">
-            <div className="w-1.5 h-8 bg-academic-blue"></div>
-            <h3 className="text-2xl font-black text-white uppercase font-serif italic tracking-tight">{t.library_explorer}</h3>
+        <section className="space-y-8 flex-1 flex flex-col min-h-[800px]">
+          <div className="flex items-center gap-4">
+            <div className="w-2 h-10 bg-academic-blue shadow-[0_0_15px_rgba(0,102,204,0.5)]"></div>
+            <h3 className="text-3xl md:text-4xl font-black text-white uppercase font-serif italic tracking-tighter">
+              {t.library_explorer}
+            </h3>
           </div>
-          <div className="flex-1 bg-punk-black border border-white/10 rounded-sm overflow-hidden shadow-2xl relative group">
-            <div className="absolute inset-0 bg-academic-blue/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+          <div className="flex-1 bg-punk-black border-2 border-academic-blue/20 rounded-xl overflow-hidden shadow-[0_0_60px_rgba(0,102,204,0.15)] relative group">
+            <div className="absolute inset-0 bg-gradient-to-b from-academic-blue/5 to-transparent opacity-50 pointer-events-none z-10" />
             <iframe 
               src={driveUrl} 
-              className="w-full h-full border-none grayscale-[0.8] hover:grayscale-0 transition-all duration-700"
+              className="w-full h-full border-none transition-all duration-700"
+              style={{ 
+                filter: 'invert(0.9) hue-rotate(185deg) brightness(1.1) contrast(1.15)',
+                backgroundColor: '#fff'
+              }}
               title="Biblioteca Filosofía Z"
               allow="autoplay"
             />
+            {/* Decorative corners */}
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-academic-blue/40 z-20 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-academic-blue/40 z-20 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-academic-blue/40 z-20 pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-academic-blue/40 z-20 pointer-events-none" />
           </div>
         </section>
 
