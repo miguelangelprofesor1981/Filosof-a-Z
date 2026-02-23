@@ -68,7 +68,7 @@ export default function App() {
       landing_title_1: 'Pensar es',
       landing_title_2: 'Resistir',
       landing_quote: '"La filosofía no sirve al Estado ni a la Iglesia. Sirve para entristecer. Una filosofía que no entristece o no contraría a nadie no es una filosofía."',
-      landing_author: '— Gilles Deleuze (Remix)',
+      landing_author: '— Gilles Deleuze (Nietzsche y la filosofía)',
       landing_start: 'Comenzar Kaos',
       landing_info: 'Manifiesto',
       dashboard_status: '> SYSTEM_READY',
@@ -138,7 +138,7 @@ export default function App() {
       landing_title_1: 'Thinking is',
       landing_title_2: 'Resisting',
       landing_quote: '"Philosophy does not serve the State or the Church. It serves to sadden. A philosophy that does not sadden or contradict anyone is not a philosophy."',
-      landing_author: '— Gilles Deleuze (Remix)',
+      landing_author: '— Gilles Deleuze (Nietzsche y la filosofía)',
       landing_start: 'Start Kaos',
       landing_info: 'Manifesto',
       dashboard_status: '> SYSTEM_READY',
@@ -547,6 +547,12 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead, t }: { o
             
             <div className="flex flex-wrap gap-6">
               <div className="space-y-1">
+                <span className="text-[10px] text-gray-600 uppercase font-black">Contacto / Consultas</span>
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <a href="mailto:miguelangelprofesor81@gmail.com" className="text-white font-mono hover:text-primary transition-colors">miguelangelprofesor81@gmail.com</a>
+                </div>
+              </div>
+              <div className="space-y-1">
                 <span className="text-[10px] text-gray-600 uppercase font-black">Donaciones (Pesos ARG)</span>
                 <div className="flex items-center gap-2 text-xs text-gray-400">
                   <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[9px] font-bold">MP</span>
@@ -579,6 +585,7 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead, t }: { o
                 <p className="text-[10px] text-white font-bold uppercase tracking-widest">Datos del Propietario</p>
                 <p className="text-[10px] text-gray-400">Miguel Ángel Romero</p>
                 <p className="text-[10px] text-gray-400">CUIL: 20-28637042-2</p>
+                <p className="text-[10px] text-primary font-bold mt-1">miguelangelprofesor81@gmail.com</p>
               </div>
               <div className="space-y-1 mb-3">
                 <p className="text-[10px] text-white font-bold uppercase tracking-widest">Transferencia Bancaria</p>
