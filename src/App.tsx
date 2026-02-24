@@ -1227,6 +1227,22 @@ function LibraryView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void 
             <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-academic-blue/40 z-20 pointer-events-none" />
             <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-academic-blue/40 z-20 pointer-events-none" />
           </div>
+          
+          <div className="mt-4 p-4 bg-white/5 border border-white/10 rounded-sm">
+            <p className="text-[11px] text-gray-400 font-serif italic leading-relaxed">
+              <span className="text-primary font-bold uppercase mr-2">Sugerencia de lectura:</span>
+              Para una mejor visualización de los archivos en smartphones Android, recomendamos descargar la aplicación 
+              <a 
+                href="https://play.google.com/store/apps/details?id=com.flyersoft.moonreader&pcampaignid=web_share" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-academic-blue hover:underline mx-1 font-bold"
+              >
+                Moon+ Reader
+              </a>. 
+              También puedes optar por leer el archivo directamente desde Google Drive.
+            </p>
+          </div>
         </section>
 
         <div className="flex justify-between items-center text-[10px] uppercase font-black tracking-[0.2em] text-gray-600 border-t border-white/5 pt-6">
