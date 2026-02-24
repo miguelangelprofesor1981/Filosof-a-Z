@@ -860,7 +860,7 @@ function CinemaView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
                 <div className="flex-1 space-y-6">
                   <div>
                     <p className="text-primary font-black uppercase text-xs tracking-[0.3em] mb-2">{t.cinema_synopsis}</p>
-                    <h3 className="text-4xl md:text-5xl font-black text-white font-serif italic uppercase tracking-tighter leading-none">
+                    <h3 className="text-4xl md:text-5xl font-black text-white font-serif italic uppercase tracking-tighter leading-none" translate="no">
                       {selectedVideo.title}
                     </h3>
                   </div>
@@ -1059,7 +1059,7 @@ function VideoCard({ video, onSelect }: any) {
 
         <div className="absolute bottom-4 left-4 right-4 transform group-hover:translate-y-[-4px] transition-transform duration-500">
           <p className="text-[9px] text-primary font-black uppercase mb-1 tracking-[0.2em] opacity-80 group-hover:opacity-100">@ElProfe1981</p>
-          <h4 className="text-xl font-black text-white leading-tight group-hover:text-primary transition-colors font-serif italic tracking-tight">{video.title}</h4>
+          <h4 className="text-xl font-black text-white leading-tight group-hover:text-primary transition-colors font-serif italic tracking-tight" translate="no">{video.title}</h4>
         </div>
       </div>
       <div className="mt-4 space-y-2 px-1">
