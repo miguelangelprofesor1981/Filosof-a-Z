@@ -1195,12 +1195,17 @@ function LibraryView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void 
             >
               <ArrowLeft size={24} />
             </button>
-            <div className="space-y-2">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="space-y-2"
+            >
               <h2 className="text-5xl font-black uppercase tracking-tighter text-white font-serif">
                 {t.library_title.split(' ')[0]} <span className="italic text-academic-blue">{t.library_title.split(' ')[1]}</span>
               </h2>
               <p className="text-gray-400 font-serif italic text-lg">{t.library_subtitle}</p>
-            </div>
+            </motion.div>
           </div>
           
           <div className="flex gap-4">
@@ -1403,19 +1408,11 @@ function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
                 </p>
 
                 <div className="flex flex-wrap gap-4 pt-8">
-                  {node.interactive?.type === 'chat' && (
-                    <button 
-                      onClick={() => setShowChat(node.id)}
-                      className="bg-white/10 border border-white/20 text-white px-6 py-3 rounded-sm font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-black transition-all flex items-center gap-2"
-                    >
-                      <MessageCircle size={18} /> Chat de Pasillo
-                    </button>
-                  )}
                   <button 
-                    onClick={() => onNavigate('library')}
-                    className="bg-transparent border border-white/30 text-white px-6 py-3 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-white/5 transition-all flex items-center gap-2"
+                    onClick={() => setShowChat(node.id)}
+                    className="bg-white/10 border border-white/20 text-white px-6 py-3 rounded-sm font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-black transition-all flex items-center gap-2"
                   >
-                    <BookOpen size={18} /> Leer Más
+                    <MessageCircle size={18} /> Chat de Pasillo
                   </button>
                 </div>
               </motion.div>
@@ -1463,14 +1460,21 @@ function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
                 <h4 className="text-xl font-black text-white uppercase font-serif italic">Chat de Pasillo</h4>
               </div>
               <div className="space-y-4">
-                {CRONOS_TIMELINE.find(n => n.id === showChat)?.interactive?.content.messages.map((msg: any, i: number) => (
-                  <div key={i} className={`flex flex-col ${msg.from === 'Heráclito' ? 'items-start' : 'items-end'}`}>
-                    <span className="text-[10px] font-black text-primary uppercase mb-1">{msg.from}</span>
-                    <div className={`p-3 rounded-sm text-sm ${msg.from === 'Heráclito' ? 'bg-white/10 text-white border-l-2 border-primary' : 'bg-primary text-black font-bold'}`}>
-                      {msg.text}
-                    </div>
-                  </div>
-                ))}
+                {(() => {
+                  const node = CRONOS_TIMELINE.find(n => n.id === showChat);
+                  const participants = node?.interactive?.content.participants || [];
+                  return node?.interactive?.content.messages.map((msg: any, i: number) => {
+                    const isFirst = msg.from === participants[0];
+                    return (
+                      <div key={i} className={`flex flex-col ${isFirst ? 'items-start' : 'items-end'}`}>
+                        <span className="text-[10px] font-black text-primary uppercase mb-1">{msg.from}</span>
+                        <div className={`p-3 rounded-sm text-sm ${isFirst ? 'bg-white/10 text-white border-l-2 border-primary' : 'bg-primary text-black font-bold'}`}>
+                          {msg.text}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             </div>
           </motion.div>

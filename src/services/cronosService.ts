@@ -56,6 +56,16 @@ export const CRONOS_TIMELINE: CronosNode[] = [
       sound: 'Bajo Galopante',
       icon: 'Zap',
       brightness: 1.1
+    },
+    interactive: {
+      type: 'chat',
+      content: {
+        participants: ['Demócrito', 'Epicuro'],
+        messages: [
+          { from: 'Demócrito', text: 'Solo existen los átomos y el vacío, lo demás es opinión. ⚛️' },
+          { from: 'Epicuro', text: 'Y si los átomos se desvían un poco (clinamen), ¡tenemos libertad! 🥂' }
+        ]
+      }
     }
   },
   {
@@ -70,6 +80,16 @@ export const CRONOS_TIMELINE: CronosNode[] = [
       sound: 'Feedback de Caverna',
       icon: 'Sparkles',
       brightness: 0.9
+    },
+    interactive: {
+      type: 'chat',
+      content: {
+        participants: ['Platón', 'Glaucón'],
+        messages: [
+          { from: 'Platón', text: 'Imagina a unos prisioneros que solo ven sombras en la pared... 👤' },
+          { from: 'Glaucón', text: 'Qué extraña escena describes, y qué extraños prisioneros. ⛓️' }
+        ]
+      }
     }
   },
   {
@@ -84,6 +104,16 @@ export const CRONOS_TIMELINE: CronosNode[] = [
       sound: 'Eco Monástico',
       icon: 'Book',
       brightness: 0.8
+    },
+    interactive: {
+      type: 'chat',
+      content: {
+        participants: ['Tomás', 'Aristóteles'],
+        messages: [
+          { from: 'Tomás', text: 'Maestro, he bautizado tu Metafísica para la gloria de Dios. ⛪' },
+          { from: 'Aristóteles', text: 'Mientras respetes la lógica del Motor Inmóvil, todo bien. 🏛️' }
+        ]
+      }
     }
   },
   {
@@ -98,6 +128,16 @@ export const CRONOS_TIMELINE: CronosNode[] = [
       sound: 'Metrónomo Acelerado',
       icon: 'Zap',
       brightness: 1.0
+    },
+    interactive: {
+      type: 'chat',
+      content: {
+        participants: ['Descartes', 'Genio Maligno'],
+        messages: [
+          { from: 'Descartes', text: 'Dudo de todo, incluso de mis sentidos. ¿Eres tú quien me engaña? 🧠' },
+          { from: 'Genio Maligno', text: 'Tal vez, pero para ser engañado, primero tienes que existir. 😉' }
+        ]
+      }
     }
   },
   {
@@ -112,6 +152,16 @@ export const CRONOS_TIMELINE: CronosNode[] = [
       sound: 'Proclamación Radical',
       icon: 'Brain',
       brightness: 1.1
+    },
+    interactive: {
+      type: 'chat',
+      content: {
+        participants: ['Kant', 'Hume'],
+        messages: [
+          { from: 'Hume', text: 'Solo hay impresiones y hábito, Immanuel. La causalidad es un cuento. ☕' },
+          { from: 'Kant', text: '¡Me has despertado de mi sueño dogmático! Pero la razón tiene sus categorías. ⏰' }
+        ]
+      }
     }
   },
   {
@@ -126,6 +176,16 @@ export const CRONOS_TIMELINE: CronosNode[] = [
       sound: 'Grito de Poder',
       icon: 'Bolt',
       brightness: 0.7
+    },
+    interactive: {
+      type: 'chat',
+      content: {
+        participants: ['Nietzsche', 'Zarathustra'],
+        messages: [
+          { from: 'Nietzsche', text: '¡Dios ha muerto! Y nosotros lo hemos matado. ¿Cómo nos consolareis? ⚡' },
+          { from: 'Zarathustra', text: 'Mirad, yo os enseño el superhombre. El hombre es algo que debe ser superado. 🦅' }
+        ]
+      }
     }
   },
   {
@@ -140,6 +200,16 @@ export const CRONOS_TIMELINE: CronosNode[] = [
       sound: 'Resistencia Urbana',
       icon: 'Info',
       brightness: 0.5
+    },
+    interactive: {
+      type: 'chat',
+      content: {
+        participants: ['Sartre', 'Beauvoir'],
+        messages: [
+          { from: 'Sartre', text: 'El hombre está condenado a ser libre. No hay excusas. 🚬' },
+          { from: 'Beauvoir', text: 'Y esa libertad debe ser compartida, Jean-Paul. No se nace mujer, se llega a serlo. 📚' }
+        ]
+      }
     }
   },
   {
@@ -154,6 +224,16 @@ export const CRONOS_TIMELINE: CronosNode[] = [
       sound: 'Pulso Digital',
       icon: 'Smartphone',
       brightness: 0.9
+    },
+    interactive: {
+      type: 'chat',
+      content: {
+        participants: ['Han', 'Foucault'],
+        messages: [
+          { from: 'Foucault', text: 'El panóptico nos vigila desde fuera, Byung-Chul. 👁️' },
+          { from: 'Han', text: 'Ya no, Michel. Ahora el panóptico es digital y nosotros mismos subimos las fotos. 📱' }
+        ]
+      }
     }
   }
 ];
