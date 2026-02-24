@@ -911,6 +911,8 @@ function CinemaView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
       exit={{ opacity: 0 }}
       className="flex-1 overflow-y-auto custom-scrollbar bg-background-dark relative"
     >
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03] film-grain"></div>
+      
       <AnimatePresence>
         {selectedVideo && (
           <motion.div 
@@ -1050,7 +1052,7 @@ function CinemaView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
             className="shrink-0 w-full md:w-64 aspect-video overflow-hidden border-2 border-white/20 group-hover:border-primary transition-all shadow-2xl relative"
           >
             <img 
-              src="Odisea.jpg" 
+              src="https://www.dropbox.com/scl/fi/9z3ycq47iub21lvlea5uq/Odysee-2.png?rlkey=n7ed2f5nyu7ptdhdi0smkpn92&st=jrvo2xgn&raw=1" 
               alt="Canal Odysee" 
               className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
               onError={(e) => { e.currentTarget.src = "https://picsum.photos/seed/odysee/400/225?grayscale"; }}
@@ -1112,29 +1114,43 @@ function CinemaView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
 
 function VideoCard({ video, onSelect }: any) {
   return (
-    <div className="group cursor-pointer" onClick={onSelect}>
-      <div className="relative aspect-video bg-black border border-white/10 group-hover:border-primary transition-all duration-300 overflow-hidden">
-        <img src={video.cover} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 opacity-60 group-hover:opacity-100" referrerPolicy="no-referrer" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="size-16 rounded-full bg-primary/20 backdrop-blur-sm border border-primary flex items-center justify-center text-primary">
+    <motion.div 
+      whileHover={{ y: -5 }}
+      className="group cursor-pointer" 
+      onClick={onSelect}
+    >
+      <div className="relative aspect-[16/9] bg-black border border-white/10 group-hover:border-primary/50 transition-all duration-500 overflow-hidden shadow-lg group-hover:shadow-[0_0_30px_rgba(253,240,1,0.1)]">
+        <img 
+          src={video.cover} 
+          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110 opacity-60 group-hover:opacity-100" 
+          referrerPolicy="no-referrer" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-40 transition-opacity duration-500" />
+        
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 scale-90 group-hover:scale-100">
+          <div className="size-16 rounded-full bg-primary/10 backdrop-blur-md border border-primary/40 flex items-center justify-center text-primary shadow-[0_0_20px_rgba(253,240,1,0.3)]">
             <Film size={32} />
           </div>
         </div>
-        <div className="absolute bottom-4 left-4 right-4">
-          <p className="text-[10px] text-primary font-black uppercase mb-1 tracking-wider">@ElProfe1981</p>
-          <h4 className="text-lg font-bold text-white leading-tight group-hover:text-primary transition-colors font-serif italic">{video.title}</h4>
+        
+        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="px-2 py-1 bg-primary text-black text-[8px] font-black uppercase tracking-widest">PLAY</span>
+        </div>
+
+        <div className="absolute bottom-4 left-4 right-4 transform group-hover:translate-y-[-4px] transition-transform duration-500">
+          <p className="text-[9px] text-primary font-black uppercase mb-1 tracking-[0.2em] opacity-80 group-hover:opacity-100">@ElProfe1981</p>
+          <h4 className="text-xl font-black text-white leading-tight group-hover:text-primary transition-colors font-serif italic tracking-tight">{video.title}</h4>
         </div>
       </div>
-      <div className="mt-4 space-y-2">
-        <p className="text-xs text-gray-400 font-serif italic line-clamp-2">{video.synopsis}</p>
+      <div className="mt-4 space-y-2 px-1">
+        <p className="text-xs text-gray-400 font-serif italic line-clamp-2 leading-relaxed opacity-70 group-hover:opacity-100 transition-opacity">{video.synopsis}</p>
         <button 
-          className="inline-flex items-center gap-2 text-[10px] text-primary font-black uppercase tracking-widest hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-[10px] text-primary font-black uppercase tracking-widest hover:text-white transition-colors group/btn"
         >
-          Ver Sinopsis <Info size={12} />
+          Ver Sinopsis <Info size={12} className="group-hover/btn:rotate-12 transition-transform" />
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

@@ -61,6 +61,11 @@
     background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%);
     background-size: 100% 4px;
   }
+
+  .film-grain {
+    background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
+    background-repeat: repeat;
+  }
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Open+Sans:wght@300;400;600&family=JetBrains+Mono:wght@400;500&family=Special+Elite&display=swap');
