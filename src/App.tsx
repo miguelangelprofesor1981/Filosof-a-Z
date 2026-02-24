@@ -93,7 +93,15 @@ export default function App() {
       dashboard_my_library_sub: 'Archivos',
       dashboard_my_library_tag: 'ACTIVE',
       dashboard_my_library_footer_empty: 'Sin lecturas activas',
-      dashboard_my_library_footer_last: 'Último: '
+      dashboard_my_library_footer_last: 'Último: ',
+      donations_contact: 'Contacto / Consultas',
+      donations_arg: 'Donaciones (Pesos ARG)',
+      donations_usd: 'Donaciones (USD / Exterior)',
+      donations_support: 'Sostener el proyecto',
+      donations_owner: 'Datos del Propietario',
+      donations_bank: 'Transferencia Bancaria',
+      donations_thanks: 'Gracias por apoyar la educación libre y el pensamiento crítico.',
+      donations_alias_mp: 'MP Alias: elprofedefilosofia'
     },
     en: {
       nav_home: 'Home',
@@ -163,7 +171,15 @@ export default function App() {
       dashboard_my_library_sub: 'Files',
       dashboard_my_library_tag: 'ACTIVE',
       dashboard_my_library_footer_empty: 'No active readings',
-      dashboard_my_library_footer_last: 'Last: '
+      dashboard_my_library_footer_last: 'Last: ',
+      donations_contact: 'Contact / Inquiries',
+      donations_arg: 'Donaciones (Pesos ARG)',
+      donations_usd: 'Donaciones (USD / Exterior)',
+      donations_support: 'Support the project',
+      donations_owner: 'Owner Data',
+      donations_bank: 'Bank Transfer',
+      donations_thanks: 'Thank you for supporting free education and critical thinking.',
+      donations_alias_mp: 'MP Alias: elprofedefilosofia'
     }
   }[language];
 
@@ -547,20 +563,19 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead, t }: { o
             
             <div className="flex flex-wrap gap-6">
               <div className="space-y-1">
-                <span className="text-[10px] text-gray-600 uppercase font-black">Contacto / Consultas</span>
+                <span className="text-[10px] text-gray-600 uppercase font-black">{t.donations_contact}</span>
                 <div className="flex items-center gap-2 text-xs text-gray-400">
                   <a href="mailto:miguelangelprofesor81@gmail.com" className="text-white font-mono hover:text-primary transition-colors">miguelangelprofesor81@gmail.com</a>
                 </div>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] text-gray-600 uppercase font-black">Donaciones (Pesos ARG)</span>
+                <span className="text-[10px] text-gray-600 uppercase font-black">{t.donations_arg}</span>
                 <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <span className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[9px] font-bold">MP</span>
-                  <span>Alias: <span className="text-white font-mono">elprofedefilosofia</span></span>
+                  <span className="text-white font-mono">{t.donations_alias_mp}</span>
                 </div>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] text-gray-600 uppercase font-black">Donaciones (USD / Exterior)</span>
+                <span className="text-[10px] text-gray-600 uppercase font-black">{t.donations_usd}</span>
                 <div className="flex items-center gap-2 text-xs text-gray-400">
                   <span>Alias: <span className="text-white font-mono">REZO.BIGOTE.BAR</span></span>
                   <span className="text-[10px] opacity-50">(Miguel Ángel Romero)</span>
@@ -578,21 +593,21 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead, t }: { o
               }}
             >
               <Coffee size={18} className="group-hover:animate-bounce" />
-              <span className="text-xs font-black uppercase tracking-widest">Sostener el proyecto</span>
+              <span className="text-xs font-black uppercase tracking-widest">{t.donations_support}</span>
             </button>
             <div id="donation-info" className="hidden absolute bottom-full right-0 mb-4 w-72 bg-surface-dark border border-primary p-4 shadow-2xl z-50">
               <div className="space-y-1 mb-3 border-b border-white/10 pb-2">
-                <p className="text-[10px] text-white font-bold uppercase tracking-widest">Datos del Propietario</p>
+                <p className="text-[10px] text-white font-bold uppercase tracking-widest">{t.donations_owner}</p>
                 <p className="text-[10px] text-gray-400">Miguel Ángel Romero</p>
                 <p className="text-[10px] text-gray-400">CUIL: 20-28637042-2</p>
                 <p className="text-[10px] text-primary font-bold mt-1">miguelangelprofesor81@gmail.com</p>
               </div>
               <div className="space-y-1 mb-3">
-                <p className="text-[10px] text-white font-bold uppercase tracking-widest">Transferencia Bancaria</p>
+                <p className="text-[10px] text-white font-bold uppercase tracking-widest">{t.donations_bank}</p>
                 <p className="text-[10px] text-gray-400">CBU: 0140025004713650648808</p>
                 <p className="text-[10px] text-gray-400">SWIFT: PRBAARBAXXX</p>
               </div>
-              <p className="text-[10px] text-gray-400 italic">Gracias por apoyar la educación libre y el pensamiento crítico.</p>
+              <p className="text-[10px] text-gray-400 italic">{t.donations_thanks}</p>
             </div>
           </div>
         </div>
