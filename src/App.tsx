@@ -1237,6 +1237,62 @@ function LibraryView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void 
           </div>
         </section>
 
+        {/* Libros ATP Section */}
+        <section className="space-y-8">
+          <div className="flex items-center gap-4">
+            <div className="w-2 h-10 bg-primary shadow-[0_0_15px_rgba(253,240,1,0.3)]"></div>
+            <h3 className="text-3xl md:text-4xl font-black text-white uppercase font-serif italic tracking-tighter">Libros ATP</h3>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { 
+                title: "¿Para qué sirve la filosofía?", 
+                url: "https://www.dropbox.com/scl/fo/gps0yu5br2gcgaoail7cv/ABxU_N27y14X-wS7AH97vD4/%C2%BFPara%20que%20sitrve%20la%20filosof%C3%ADa%3F.jpeg?rlkey=sra0zf885wydnxh8dqar4zujq&raw=1",
+                link: "https://drive.google.com/file/d/1I3XdAWyCSxI-nxHKWJJv44nzigE5s-Vx/view?usp=sharing"
+              },
+              { 
+                title: "Filosofía Doméstica", 
+                url: "https://www.dropbox.com/scl/fi/lrclp680c7fkp442hjzwa/Filosof-a-Dom-stica-M.A.jpg?rlkey=d15kcc29nzg1ywp9jmzlpfywb&raw=1",
+                link: "https://drive.google.com/file/d/1e2vAahqA-wh0CPDaJjnMkqAyQDq_s7z8/view?usp=sharing"
+              },
+              { 
+                title: "La sociedad del cansancio", 
+                url: "https://www.dropbox.com/scl/fo/gps0yu5br2gcgaoail7cv/AHAAQZ-2IsvBNyexdfTwXzM/La%20sociedad%20del%20cansancio.jpeg?rlkey=sra0zf885wydnxh8dqar4zujq&raw=1",
+                link: "https://drive.google.com/file/d/1denucMO_rT6417lW5qWUuMQJ7Cg4Fcq4/view?usp=sharing"
+              },
+              { 
+                title: "Los Simpsons y la filosofía", 
+                url: "https://www.dropbox.com/scl/fo/gps0yu5br2gcgaoail7cv/APn0HRFKLLhls-YpdEVeo2k/Los%20Simpsons%20y%20la%20filosof%C3%ADa.jpeg?rlkey=sra0zf885wydnxh8dqar4zujq&raw=1",
+                link: "https://drive.google.com/file/d/1IO2kPrwf4CoQ-w0H82jS38CEPiR9tZl4/view?usp=sharing"
+              }
+            ].map((book, i) => (
+              <a 
+                key={i} 
+                href={book.link} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <motion.div 
+                  whileHover={{ scale: 1.05, rotate: i % 2 === 0 ? 1 : -1 }}
+                  className="relative aspect-[3/4] bg-punk-black border border-white/10 rounded-sm overflow-hidden shadow-xl group cursor-pointer"
+                >
+                  <img 
+                    src={book.url} 
+                    alt={book.title}
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-primary/90">
+                    <p className="text-black font-black text-[10px] uppercase leading-tight">{book.title}</p>
+                  </div>
+                </motion.div>
+              </a>
+            ))}
+          </div>
+        </section>
+
         {/* Drive Folder Iframe Container */}
         <section className="space-y-8 flex-1 flex flex-col min-h-[800px]">
           <div className="flex items-center gap-4">
