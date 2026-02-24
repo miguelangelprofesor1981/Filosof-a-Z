@@ -20,7 +20,6 @@ export default function App() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeReaderBook, setActiveReaderBook] = React.useState<Book | null>(null);
   const [downloadProgress, setDownloadProgress] = React.useState<Record<string, number>>({});
-  const [language, setLanguage] = React.useState<'es' | 'en'>('es');
   
   const aiRef = React.useRef<PhilosophyAI | null>(null);
 
@@ -102,86 +101,8 @@ export default function App() {
       donations_bank: 'Transferencia Bancaria',
       donations_thanks: 'Gracias por apoyar la educación libre y el pensamiento crítico.',
       donations_alias_mp: 'MP Alias: elprofedefilosofia'
-    },
-    en: {
-      nav_home: 'Home',
-      nav_library: 'Library',
-      nav_chat: 'AI Chat',
-      nav_cinema: 'Cinema',
-      nav_cronos: 'Cronos',
-      nav_new_query: 'New Query',
-      soul_status: 'Soul Status',
-      socratic_connection: 'Socratic Connection',
-      philosophy_z: 'Philosophy Z',
-      radical_thought: 'Radical thought from the South',
-      chat_placeholder: 'Write your question...',
-      chat_title: 'The Punk Prof',
-      chat_subtitle: 'Radical Thought',
-      chat_history: 'View reflection history',
-      chat_welcome: 'Welcome, truth seeker. What premise of your reality do you wish to question today?',
-      chat_error: 'The dialectic has been interrupted by a technical error. Try again.',
-      library_title: 'Library',
-      library_subtitle: 'Repository of radical thought and critical archives.',
-      library_search: 'Search authors or texts...',
-      library_recommended: 'Recommended Reading',
-      library_explorer: 'File Explorer',
-      library_browse_elejandria: 'Browse Elejandría',
-      library_open_drive: 'Open Drive',
-      cinema_title: 'DIGITAL PUNK CINEMA',
-      cinema_subtitle: 'Decentralized content aggregator. Films that question the structure of reality.',
-      cinema_featured: 'Featured Film',
-      cinema_telegram: 'Telegram Channel',
-      cinema_close: 'Close',
-      cinema_synopsis: 'Philosophical Synopsis',
-      cinema_view_featured: 'View Featured',
-      cinema_view_telegram: 'View on Telegram',
-      user: 'User',
-      profe: 'The Punk Prof',
-      reference: 'Reference',
-      bibliography: 'Bibliography',
-      concepts: 'Key Concepts',
-      next_workshop: 'Next Workshop',
-      workshop_title: 'Existentialism & Punk in Buenos Aires',
-      landing_manifesto: 'Manifesto 01',
-      landing_title_1: 'Thinking is',
-      landing_title_2: 'Resisting',
-      landing_quote: '"Philosophy does not serve the State or the Church. It serves to sadden. A philosophy that does not sadden or contradict anyone is not a philosophy."',
-      landing_author: '— Gilles Deleuze (Nietzsche y la filosofía)',
-      landing_start: 'Start Kaos',
-      landing_info: 'Manifesto',
-      dashboard_status: '> SYSTEM_READY',
-      dashboard_title_1: 'Modules',
-      dashboard_title_2: 'Punk',
-      dashboard_library_sub: 'Radical',
-      dashboard_library_tag: 'READ',
-      dashboard_library_footer: 'Forbidden Texts',
-      dashboard_profe_sub: 'AI Mentor',
-      dashboard_profe_tag: 'LIVE',
-      dashboard_profe_footer: '"Ask, doubt, destroy."',
-      dashboard_cinema_sub: 'Cinesophy',
-      dashboard_cinema_tag: 'PREMIUM',
-      dashboard_cinema_footer: 'Deep Analysis',
-      dashboard_cronos_sub: 'Zeitgeist',
-      dashboard_cronos_tag: 'TIME',
-      dashboard_cronos_footer: 'Timeline',
-      dashboard_readings_title: 'My Library',
-      dashboard_readings_empty: 'You haven\'t saved any texts in your resistance log yet.',
-      dashboard_instagram_title: 'Follow the Revolution on Instagram',
-      dashboard_instagram_sub: '@elprofedefilosofia - Radical thought in visual doses.',
-      dashboard_my_library_sub: 'Files',
-      dashboard_my_library_tag: 'ACTIVE',
-      dashboard_my_library_footer_empty: 'No active readings',
-      dashboard_my_library_footer_last: 'Last: ',
-      donations_contact: 'Contact / Inquiries',
-      donations_arg: 'Donaciones (Pesos ARG)',
-      donations_usd: 'Donaciones (USD / Exterior)',
-      donations_support: 'Support the project',
-      donations_owner: 'Owner Data',
-      donations_bank: 'Bank Transfer',
-      donations_thanks: 'Thank you for supporting free education and critical thinking.',
-      donations_alias_mp: 'MP Alias: elprofedefilosofia'
     }
-  }[language];
+  }.es;
 
   React.useEffect(() => {
     if (process.env.GEMINI_API_KEY) {
@@ -350,8 +271,6 @@ export default function App() {
               onSend={handleSendMessage} 
               isTyping={isTyping} 
               t={t}
-              language={language}
-              setLanguage={setLanguage}
               onNavigate={setCurrentView}
             />
           )}
@@ -674,7 +593,7 @@ function ModuleCard({ title, subtitle, tag, footer, image, isAI, progress, onCli
   );
 }
 
-function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, language, setLanguage, onNavigate }: any) {
+function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, onNavigate }: any) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -727,20 +646,6 @@ function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, lang
             >
               <History size={20} />
             </button>
-            <div className="flex items-center border border-white/20 rounded overflow-hidden" role="group" aria-label="Language selection">
-              <button 
-                onClick={() => setLanguage('es')}
-                className={`px-3 py-1 text-[10px] font-black tracking-widest transition-colors ${language === 'es' ? 'bg-primary text-black' : 'bg-transparent text-gray-400 hover:text-white'}`}
-              >
-                ES
-              </button>
-              <button 
-                onClick={() => setLanguage('en')}
-                className={`px-3 py-1 text-[10px] font-black tracking-widest transition-colors ${language === 'en' ? 'bg-primary text-black' : 'bg-transparent text-gray-400 hover:text-white'}`}
-              >
-                EN
-              </button>
-            </div>
           </div>
         </header>
 
