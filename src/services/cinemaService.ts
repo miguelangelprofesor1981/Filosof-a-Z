@@ -62,13 +62,13 @@ export const CINEMA_CATALOG: Video[] = [
     synopsis: 'Nihilismo, consumismo y la destrucción del ego. ¿Es la violencia el único camino para sentir algo real en un mundo de plástico?',
     url: 'https://t.me/tuspeliculas15555/5',
     cover: 'https://www.dropbox.com/scl/fi/68buagxows1tzt9woyedm/el-club-de-la-pelea-pelicula-david-fincher.jpeg?rlkey=b24f7jhwabr2039vtwvc5w1x3&st=a3pv5xfs&raw=1',
-    category: 'Nihilismo'
+    category: 'Estética'
   }
 ];
 
 export const PHILOSOPHICAL_PROBLEMS = [
   'Gnoseología',
   'Ética',
-  'Nihilismo',
+  'Estética',
   'Política y Sociedad'
 ];
