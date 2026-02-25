@@ -12,7 +12,7 @@ type View = 'landing' | 'dashboard' | 'chat' | 'cinema' | 'library' | 'cronos';
 export default function App() {
   const [currentView, setCurrentView] = React.useState<View>('landing');
   const [chatMessages, setChatMessages] = React.useState<Message[]>([
-    { role: 'model', text: 'Bienvenido, buscador de la verdad. ¿Qué premisa de tu realidad deseas que cuestionemos hoy?' }
+    { role: 'model', text: 'Bienvenido, buscador de la sabiduría. ¿Qué premisa de tu realidad deseas que cuestionemos hoy?' }
   ]);
   const [userInput, setUserInput] = React.useState('');
   const [isTyping, setIsTyping] = React.useState(false);
@@ -39,7 +39,7 @@ export default function App() {
       chat_title: 'El Profe Punk',
       chat_subtitle: 'Pensamiento Radical',
       chat_history: 'Ver historial de reflexiones',
-      chat_welcome: 'Bienvenido, buscador de la verdad. ¿Qué premisa de tu realidad deseas que cuestionemos hoy?',
+      chat_welcome: 'Bienvenido, buscador de la sabiduría. ¿Qué premisa de tu realidad deseas que cuestionemos hoy?',
       chat_error: 'La dialéctica se ha visto interrumpida por un error técnico. Inténtalo de nuevo.',
       library_title: 'Biblioteca',
       library_subtitle: 'Repositorio de pensamiento radical y archivos críticos.',
@@ -664,82 +664,72 @@ function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, onNa
           )}
         </div>
 
-        <div className="p-6 bg-gradient-to-t from-black via-punk-black to-transparent backdrop-blur-sm">
+        <div className="p-4 bg-gradient-to-t from-black via-punk-black to-transparent backdrop-blur-sm">
           <form 
             onSubmit={(e) => { e.preventDefault(); onSend(); }}
-            className="max-w-4xl mx-auto relative group"
+            className="max-w-3xl mx-auto relative group"
           >
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-transparent rounded blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-            <div className="relative flex items-center gap-0 bg-punk-black border-2 border-white/20 p-2 shadow-2xl">
-              <div className="flex items-center justify-center px-4 text-primary border-r border-white/10">
-                <Brain size={24} />
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-transparent rounded blur opacity-10 group-hover:opacity-20 transition duration-500"></div>
+            <div className="relative flex items-center gap-0 bg-punk-black border border-white/20 p-1 shadow-xl">
+              <div className="flex items-center justify-center px-3 text-primary border-r border-white/10">
+                <Brain size={18} />
               </div>
               <input 
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                className="flex-1 bg-transparent border-none focus:ring-0 text-white placeholder:text-gray-600 px-4 py-3 font-sans text-lg font-light" 
+                className="flex-1 bg-transparent border-none focus:ring-0 text-white placeholder:text-gray-600 px-3 py-1.5 font-sans text-sm font-light" 
                 placeholder={t.chat_placeholder} 
                 type="text"
               />
               <button 
                 type="submit"
-                className="bg-primary text-black size-12 flex items-center justify-center transition-all hover:bg-white hover:scale-105"
+                className="bg-primary text-black size-10 flex items-center justify-center transition-all hover:bg-white hover:scale-105"
               >
-                <Send size={24} />
+                <Send size={18} />
               </button>
             </div>
           </form>
         </div>
-      </div>
 
-      {/* Right Sidebar */}
-      <aside className="hidden xl:flex flex-col w-80 border-l border-white/10 bg-punk-black/95 p-6 gap-8 overflow-y-auto custom-scrollbar relative">
-        <div className="absolute bottom-0 right-0 opacity-5 pointer-events-none select-none text-[120px] font-black leading-none text-white rotate-[-90deg] origin-bottom-right z-0">PUNK</div>
-        
-        <section className="relative z-10 bg-gradient-to-br from-orange-900/20 to-punk-black border-2 border-orange-500/30 p-6 shadow-[8px_8px_0px_0px_rgba(249,115,22,0.1)] group hover:border-orange-500 transition-all">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-orange-500 text-black rounded-sm">
-              <Music size={20} />
-            </div>
-            <h3 className="text-xs text-orange-500 uppercase font-black tracking-[0.2em]">Sintonía Radical</h3>
-          </div>
-          <div className="space-y-4">
-            <p className="text-gray-200 font-serif italic text-lg leading-relaxed">
-              "Donde las palabras fallan, la música habla." 
-              <span className="block text-orange-500 text-sm font-black mt-1">— Arthur Schopenhauer</span>
-              <span className="text-xs text-gray-400 font-light">(y yo no podría estar más de acuerdo)</span>
-            </p>
-            <p className="text-xs text-gray-400 font-serif italic leading-relaxed border-l border-orange-500/30 pl-4">
-              La filosofía y la música no son mundos diferentes. Al final del día, ambas buscan lo mismo: darle algo de sentido al inevitable silencio.
-            </p>
-            <a 
-              href="https://on.soundcloud.com/dQqLtdJw83FO01wkxP" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center justify-between w-full bg-orange-500 text-black px-4 py-3 font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all group/link"
-            >
-              Escuchar en SoundCloud
-              <ExternalLink size={14} className="group-hover/link:translate-x-1 transition-transform" />
-            </a>
-          </div>
-        </section>
-
-        <section className="mt-auto relative z-10">
-          <div className="relative overflow-hidden border-2 border-white/10 group transition-all">
-            <div className="h-48 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" style={{ backgroundImage: "url('https://www.dropbox.com/scl/fi/eo8jkaujfxs8d1j55d29o/tapa-cd.jpeg?rlkey=j9r6okqt0sxy193e2x14enz7h&st=oagka901&raw=1')" }}></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <div className="size-12 rounded-full border border-white/30 flex items-center justify-center backdrop-blur-sm">
-                <Music className="text-white animate-pulse" size={20} />
+        {/* Music Sections moved from sidebar */}
+        <div className="p-4 border-t border-white/10 bg-punk-black/30">
+          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+            <section className="relative z-10 bg-gradient-to-br from-orange-900/20 to-punk-black border border-orange-500/30 p-4 shadow-[4px_4px_0px_0px_rgba(249,115,22,0.1)] group hover:border-orange-500 transition-all">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 bg-orange-500 text-black rounded-sm">
+                  <Music size={14} />
+                </div>
+                <h3 className="text-[10px] text-orange-500 uppercase font-black tracking-[0.2em]">Sintonía Radical</h3>
               </div>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-black/60 backdrop-blur-md border-t border-white/10">
-              <p className="text-[10px] text-orange-500 font-black uppercase tracking-[0.2em] mb-1">Atmósfera Sonora</p>
-              <p className="text-[10px] text-gray-400 font-serif italic leading-tight">El eco de la razón en la melodía del caos.</p>
-            </div>
+              <div className="space-y-2">
+                <p className="text-gray-200 font-serif italic text-sm leading-snug">
+                  "Donde las palabras fallan, la música habla." 
+                  <span className="block text-orange-500 text-[10px] font-black mt-0.5">— Arthur Schopenhauer</span>
+                </p>
+                <a 
+                  href="https://on.soundcloud.com/dQqLtdJw83FO01wkxP" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between w-full bg-orange-500 text-black px-3 py-2 font-black text-[9px] uppercase tracking-widest hover:bg-white transition-all group/link"
+                >
+                  Escuchar en SoundCloud
+                  <ExternalLink size={12} className="group-hover/link:translate-x-1 transition-transform" />
+                </a>
+              </div>
+            </section>
+
+            <section className="relative z-10">
+              <div className="relative h-full overflow-hidden border border-white/10 group transition-all">
+                <div className="h-full min-h-[120px] bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" style={{ backgroundImage: "url('https://www.dropbox.com/scl/fi/eo8jkaujfxs8d1j55d29o/tapa-cd.jpeg?rlkey=j9r6okqt0sxy193e2x14enz7h&st=oagka901&raw=1')" }}></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/60 backdrop-blur-md border-t border-white/10">
+                  <p className="text-[9px] text-orange-500 font-black uppercase tracking-[0.2em]">Atmósfera Sonora</p>
+                </div>
+              </div>
+            </section>
           </div>
-        </section>
-      </aside>
+        </div>
+      </div>
     </motion.div>
   );
 }
