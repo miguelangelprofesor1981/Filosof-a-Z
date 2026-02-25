@@ -726,7 +726,7 @@ function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, onNa
 
         <section className="mt-auto relative z-10">
           <div className="relative overflow-hidden border-2 border-white/10 group transition-all">
-            <div className="h-48 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1514525253361-bee8a187499b?q=80&w=400&auto=format&fit=crop')" }}></div>
+            <div className="h-48 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" style={{ backgroundImage: "url('https://www.dropbox.com/scl/fi/eo8jkaujfxs8d1j55d29o/tapa-cd.jpeg?rlkey=j9r6okqt0sxy193e2x14enz7h&st=oagka901&raw=1')" }}></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <div className="size-12 rounded-full border border-white/30 flex items-center justify-center backdrop-blur-sm">
