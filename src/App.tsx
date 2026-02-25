@@ -696,71 +696,51 @@ function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, onNa
       <aside className="hidden xl:flex flex-col w-80 border-l border-white/10 bg-punk-black/95 p-6 gap-8 overflow-y-auto custom-scrollbar relative">
         <div className="absolute bottom-0 right-0 opacity-5 pointer-events-none select-none text-[120px] font-black leading-none text-white rotate-[-90deg] origin-bottom-right z-0">PUNK</div>
         
-        <section className="relative z-10">
-          <div className="flex items-center gap-2 mb-6 border-b border-primary/30 pb-2">
-            <BookOpen className="text-primary" size={16} />
-            <h3 className="text-xs text-primary uppercase font-black tracking-[0.2em]">{t.bibliography}</h3>
+        <section className="relative z-10 bg-gradient-to-br from-orange-900/20 to-punk-black border-2 border-orange-500/30 p-6 shadow-[8px_8px_0px_0px_rgba(249,115,22,0.1)] group hover:border-orange-500 transition-all">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-orange-500 text-black rounded-sm">
+              <Music size={20} />
+            </div>
+            <h3 className="text-xs text-orange-500 uppercase font-black tracking-[0.2em]">Sintonía Radical</h3>
           </div>
           <div className="space-y-4">
-            <BibliographyItem title="Apología de Sócrates" author="Platón" />
-            <BibliographyItem title="Más allá del bien y del mal" author="Friedrich Nietzsche" />
-          </div>
-        </section>
-
-        <section className="relative z-10">
-          <div className="flex items-center gap-2 mb-6 border-b border-primary/30 pb-2">
-            <Bookmark className="text-primary" size={16} />
-            <h3 className="text-xs text-primary uppercase font-black tracking-[0.2em]">{t.concepts}</h3>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <ConceptTag label="Ironía" active />
-            <ConceptTag label="Mayéutica" active />
-            <ConceptTag label="Elenchos" />
-            <ConceptTag label="Doxa" />
+            <p className="text-gray-200 font-serif italic text-lg leading-relaxed">
+              "Donde las palabras fallan, la música habla." 
+              <span className="block text-orange-500 text-sm font-black mt-1">— Arthur Schopenhauer</span>
+              <span className="text-xs text-gray-400 font-light">(y yo no podría estar más de acuerdo)</span>
+            </p>
+            <p className="text-xs text-gray-400 font-serif italic leading-relaxed border-l border-orange-500/30 pl-4">
+              La filosofía y la música no son mundos diferentes. Al final del día, ambas buscan lo mismo: darle algo de sentido al inevitable silencio.
+            </p>
+            <a 
+              href="https://on.soundcloud.com/dQqLtdJw83FO01wkxP" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center justify-between w-full bg-orange-500 text-black px-4 py-3 font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all group/link"
+            >
+              Escuchar en SoundCloud
+              <ExternalLink size={14} className="group-hover/link:translate-x-1 transition-transform" />
+            </a>
           </div>
         </section>
 
         <section className="mt-auto relative z-10">
-          <div className="relative overflow-hidden border-2 border-white/10 group cursor-pointer hover:border-primary transition-colors">
-            <div className="h-48 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?q=80&w=400&auto=format&fit=crop')" }}></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 bg-black/80 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-[10px] font-black text-primary uppercase tracking-wider">{t.next_workshop}</p>
-                <ExternalLink className="text-primary" size={14} />
+          <div className="relative overflow-hidden border-2 border-white/10 group transition-all">
+            <div className="h-48 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1514525253361-bee8a187499b?q=80&w=400&auto=format&fit=crop')" }}></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="size-12 rounded-full border border-white/30 flex items-center justify-center backdrop-blur-sm">
+                <Music className="text-white animate-pulse" size={20} />
               </div>
-              <h4 className="text-white text-base font-bold font-serif leading-tight group-hover:text-primary transition-colors">{t.workshop_title}</h4>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-black/60 backdrop-blur-md border-t border-white/10">
+              <p className="text-[10px] text-orange-500 font-black uppercase tracking-[0.2em] mb-1">Atmósfera Sonora</p>
+              <p className="text-[10px] text-gray-400 font-serif italic leading-tight">El eco de la razón en la melodía del caos.</p>
             </div>
           </div>
         </section>
       </aside>
     </motion.div>
-  );
-}
-
-function BibliographyItem({ title, author }: { title: string, author: string }) {
-  return (
-    <button 
-      className="w-full text-left p-4 bg-white/5 border-l-2 border-transparent hover:border-primary hover:bg-white/10 transition-all cursor-pointer group focus:outline-none focus:ring-1 focus:ring-primary"
-      aria-label={`Leer ${title} de ${author}`}
-    >
-      <h4 className="text-gray-200 font-bold font-serif text-lg group-hover:text-primary transition-colors">{title}</h4>
-      <p className="text-xs text-gray-500 mt-1 italic font-mono">{author}</p>
-    </button>
-  );
-}
-
-function ConceptTag({ label, active }: { label: string, active?: boolean }) {
-  return (
-    <button 
-      className={`px-2 py-1 text-[10px] uppercase font-black tracking-wide transform hover:rotate-2 transition-transform cursor-help focus:outline-none focus:ring-1 focus:ring-primary ${
-        active ? 'bg-primary text-black' : 'bg-white/10 border border-white/20 text-gray-300 hover:border-primary hover:text-primary'
-      }`}
-      aria-pressed={active}
-      aria-label={`Concepto: ${label}`}
-    >
-      {label}
-    </button>
   );
 }
 
