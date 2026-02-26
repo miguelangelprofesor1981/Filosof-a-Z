@@ -335,13 +335,13 @@ function LandingView({ onStart, t }: { onStart: () => void, t: any }) {
         <div className="inline-block bg-primary text-black font-bold uppercase text-xs px-2 py-1 mb-4 tracking-widest -rotate-2">
           {t.landing_manifesto}
         </div>
-        <h1 className="text-7xl md:text-9xl font-black uppercase italic leading-[0.85] text-white font-serif tracking-tighter">
+        <h1 className="text-5xl md:text-9xl font-black uppercase italic leading-[0.85] text-white font-serif tracking-tighter">
           {t.landing_title_1} <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-yellow-200" style={{ WebkitTextStroke: '1px #fdf001' }}>{t.landing_title_2}</span>
         </h1>
         
         <div className="mt-8 flex flex-col md:flex-row items-start md:items-center gap-6 border-l-4 border-primary pl-6">
-          <p className="text-xl md:text-2xl font-light italic text-slate-200 max-w-lg font-serif">
+          <p className="text-lg md:text-2xl font-light italic text-slate-200 max-w-lg font-serif">
             {t.landing_quote}
           </p>
         </div>
@@ -1296,10 +1296,10 @@ function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
             <ArrowLeft size={24} />
           </button>
           <div>
-            <h2 className="text-4xl font-black text-white uppercase font-serif italic tracking-tighter">
-              Cronos <span className="text-primary text-xl not-italic ml-2">v1.0</span>
+            <h2 className="text-2xl md:text-4xl font-black text-white uppercase font-serif italic tracking-tighter">
+              Cronos <span className="text-primary text-lg md:text-xl not-italic ml-2">v1.0</span>
             </h2>
-            <p className="text-xs text-primary font-mono mt-1 tracking-widest uppercase">Línea del Tiempo Educativa // {activeNode.year}</p>
+            <p className="text-[10px] md:text-xs text-primary font-mono mt-1 tracking-widest uppercase">Línea del Tiempo Educativa // {activeNode.year}</p>
           </div>
         </div>
       </div>
@@ -1330,11 +1330,11 @@ function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
                 <div className="inline-flex items-center gap-3 bg-primary text-black px-4 py-1 font-black text-sm uppercase tracking-tighter -rotate-2">
                   <Clock size={16} /> {node.year}
                 </div>
-                <h3 className="text-6xl md:text-8xl font-black text-white font-serif italic leading-none tracking-tighter">
+                <h3 className="text-4xl md:text-8xl font-black text-white font-serif italic leading-none tracking-tighter">
                   {node.title}
                 </h3>
-                <p className="text-2xl text-primary font-bold uppercase tracking-tight">{node.philosopher}</p>
-                <p className="text-xl text-gray-300 font-serif italic leading-relaxed border-l-4 border-primary pl-6">
+                <p className="text-lg md:text-2xl text-primary font-bold uppercase tracking-tight">{node.philosopher}</p>
+                <p className="text-base md:text-xl text-gray-300 font-serif italic leading-relaxed border-l-4 border-primary pl-6">
                   {node.description}
                 </p>
 
