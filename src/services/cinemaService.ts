@@ -63,6 +63,14 @@ export const CINEMA_CATALOG: Video[] = [
     url: 'https://t.me/tuspeliculas15555/5',
     cover: 'https://www.dropbox.com/scl/fi/68buagxows1tzt9woyedm/el-club-de-la-pelea-pelicula-david-fincher.jpeg?rlkey=b24f7jhwabr2039vtwvc5w1x3&st=a3pv5xfs&raw=1',
     category: 'Estética'
+  },
+  {
+    id: 'v8',
+    title: 'Candyman',
+    synopsis: 'La estética del horror y el mito urbano. Un análisis sobre cómo la imagen y la leyenda construyen una realidad sensible que trasciende el tiempo y el dolor social.',
+    url: 'https://t.me/tuspeliculas15555/8',
+    cover: 'https://www.dropbox.com/scl/fi/8zvn1juls8vx5aget1gme/Candyman-2021.jpeg?rlkey=wd727o6qfv17xzhs3hfsg2mwo&st=2bvx0q3i&raw=1',
+    category: 'Estética'
   }
 ];
 
