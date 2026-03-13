@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, BookOpen, MessageSquare, Film, Plus, History, Brain, Bolt, Star, Info, Bookmark, ExternalLink, Download, Search, Send, Trash2, Eye, Cloud, Loader2, Globe, Clock, Music, Zap, MessageCircle, MapPin, Sparkles, Coffee, ArrowLeft } from 'lucide-react';
+import { Home, BookOpen, MessageSquare, Film, Plus, History, Brain, Bolt, Star, Info, Bookmark, ExternalLink, Download, Search, Send, Trash2, Eye, Cloud, Loader2, Globe, Clock, Music, Zap, MessageCircle, MapPin, Sparkles, Coffee, ArrowLeft, Youtube } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PhilosophyAI, Message } from './services/geminiService';
 import { Book, downloadFile } from './services/libraryService';
@@ -427,23 +427,36 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead, t }: { o
         className="mb-16 relative group"
       >
         <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-orange-500/20 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-        <div className="relative bg-punk-black border-2 border-white/10 overflow-hidden rounded-sm shadow-2xl">
+        <a 
+          href="https://youtu.be/i0psGEZAfPU?si=TxJKbbHSi0elPOf2" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="relative block bg-punk-black border-2 border-white/10 overflow-hidden rounded-sm shadow-2xl group/link"
+        >
           <div className="absolute top-4 left-4 z-10 bg-primary text-black px-3 py-1 font-black text-[10px] uppercase tracking-widest -rotate-2">
             Mapa de la Rebeldía
+          </div>
+          <div className="absolute top-4 right-4 z-10 bg-red-600 text-white p-2 rounded-full shadow-lg opacity-0 group-hover/link:opacity-100 transition-all duration-300 transform translate-x-4 group-hover/link:translate-x-0">
+            <Youtube size={20} />
           </div>
           <img 
             src="https://www.dropbox.com/scl/fi/7a349x6f36gxxwgbfctwj/Problemas-de-la-filosof-a-Manual-de-la-rebeld-a-filos-fica.webp?rlkey=dyutubepmzafbk89jq1p3vek8&st=cg9qzb5t&raw=1" 
             alt="Problemas de la Filosofía - Infografía" 
-            className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700 cursor-zoom-in"
+            className="w-full h-auto object-cover grayscale group-hover/link:grayscale-0 transition-all duration-700"
             referrerPolicy="no-referrer"
           />
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/link:opacity-100 transition-opacity duration-500 bg-black/20">
+            <div className="bg-white/10 backdrop-blur-md p-4 rounded-full border border-white/20">
+              <Youtube size={48} className="text-red-600 animate-pulse" />
+            </div>
+          </div>
           <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent">
             <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-2">Manual de la Rebeldía Filosófica</h3>
             <p className="text-sm text-gray-400 font-serif italic max-w-2xl">
               Un recorrido visual por las grietas del pensamiento establecido. Cuestiona, deconstruye y vuelve a armar tu realidad.
             </p>
           </div>
-        </div>
+        </a>
       </motion.div>
 
       <div className="mb-16">
