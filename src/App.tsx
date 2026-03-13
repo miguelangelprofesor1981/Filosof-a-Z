@@ -419,6 +419,33 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead, t }: { o
         />
       </div>
 
+      {/* Philosophical Problems Infographic */}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }}
+        className="mb-16 relative group"
+      >
+        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-orange-500/20 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+        <div className="relative bg-punk-black border-2 border-white/10 overflow-hidden rounded-sm shadow-2xl">
+          <div className="absolute top-4 left-4 z-10 bg-primary text-black px-3 py-1 font-black text-[10px] uppercase tracking-widest -rotate-2">
+            Mapa de la Rebeldía
+          </div>
+          <img 
+            src="https://www.dropbox.com/scl/fi/7a349x6f36gxxwgbfctwj/Problemas-de-la-filosof-a-Manual-de-la-rebeld-a-filos-fica.webp?rlkey=dyutubepmzafbk89jq1p3vek8&st=cg9qzb5t&raw=1" 
+            alt="Problemas de la Filosofía - Infografía" 
+            className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700 cursor-zoom-in"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent">
+            <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-2">Manual de la Rebeldía Filosófica</h3>
+            <p className="text-sm text-gray-400 font-serif italic max-w-2xl">
+              Un recorrido visual por las grietas del pensamiento establecido. Cuestiona, deconstruye y vuelve a armar tu realidad.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
       <div className="mb-16">
         <a 
           href="https://www.instagram.com/elprofedefilosofia/" 
