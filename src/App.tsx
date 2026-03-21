@@ -9,8 +9,53 @@ import ReaderView from './components/ReaderView';
 
 type View = 'landing' | 'dashboard' | 'chat' | 'cinema' | 'library' | 'cronos';
 
+const VIEW_ORDER: View[] = ['landing', 'dashboard', 'library', 'chat', 'cinema', 'cronos'];
+
+const pageVariants = {
+  initial: (direction: number) => ({
+    opacity: 0,
+    rotateY: direction > 0 ? 45 : -45,
+    x: direction > 0 ? '20%' : '-20%',
+    z: -200,
+    scale: 0.95,
+  }),
+  animate: {
+    opacity: 1,
+    rotateY: 0,
+    x: 0,
+    z: 0,
+    scale: 1,
+    transition: {
+      duration: 0.7,
+      ease: [0.16, 1, 0.3, 1] as any,
+      staggerChildren: 0.1
+    }
+  },
+  exit: (direction: number) => ({
+    opacity: 0,
+    rotateY: direction > 0 ? -45 : 45,
+    x: direction > 0 ? '-20%' : '20%',
+    z: -200,
+    scale: 0.95,
+    transition: {
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1] as any
+    }
+  })
+};
+
 export default function App() {
   const [currentView, setCurrentView] = React.useState<View>('landing');
+  const [direction, setDirection] = React.useState(0);
+  
+  const [showRebelMap, setShowRebelMap] = React.useState(false);
+  
+  const handleNavigate = (newView: View) => {
+    const currentIndex = VIEW_ORDER.indexOf(currentView);
+    const nextIndex = VIEW_ORDER.indexOf(newView);
+    setDirection(nextIndex > currentIndex ? 1 : -1);
+    setCurrentView(newView);
+  };
   const [chatMessages, setChatMessages] = React.useState<Message[]>([
     { role: 'model', text: 'Bienvenido, buscador de la sabiduría. ¿Qué premisa de tu realidad deseas que cuestionemos hoy?' }
   ]);
@@ -113,7 +158,7 @@ export default function App() {
   const handleSendToAI = (text: string) => {
     const command = `Explícame este fragmento de este autor: "${text}"`;
     setUserInput(command);
-    setCurrentView('chat');
+    handleNavigate('chat');
     // We don't automatically send it to give the user a chance to see the command
     // but we could call handleSendMessage() if we wanted immediate response.
   };
@@ -198,8 +243,8 @@ export default function App() {
       {/* Sidebar - Only visible in non-landing views or as a persistent nav */}
       <aside className="hidden md:flex flex-col w-72 border-r border-white/10 bg-punk-black/90 backdrop-blur-sm p-6 justify-between shrink-0 relative z-20">
         <div className="flex flex-col gap-10">
-          <div className="flex items-center gap-4 px-2 cursor-pointer" onClick={() => setCurrentView('landing')}>
-            <div className="size-12 bg-primary text-black rounded-sm flex items-center justify-center font-black text-3xl font-serif -rotate-3 border-2 border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]">Z</div>
+          <div className="flex items-center gap-4 px-2 cursor-pointer" onClick={() => handleNavigate('landing')}>
+            <div className="size-12 bg-primary text-black rounded-sm flex items-center justify-center font-black text-3xl font-serif -rotate-3 border-2 border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] animate-ink-spread">Z</div>
             <div className="flex flex-col">
               <h1 className="text-white text-2xl font-bold leading-none tracking-tight font-serif">Filosofía Z</h1>
               <p className="text-[10px] text-primary font-bold mt-1 uppercase tracking-wider">By Miguel Ángel Romero</p>
@@ -210,11 +255,11 @@ export default function App() {
           </div>
 
           <nav className="flex flex-col gap-3">
-            <NavItem active={currentView === 'dashboard'} icon={<Home size={20} />} label={t.nav_home} onClick={() => setCurrentView('dashboard')} />
-            <NavItem active={currentView === 'library'} icon={<BookOpen size={20} />} label={t.nav_library} onClick={() => setCurrentView('library')} />
-            <NavItem active={currentView === 'chat'} icon={<MessageSquare size={20} />} label={t.nav_chat} onClick={() => setCurrentView('chat')} />
-            <NavItem active={currentView === 'cinema'} icon={<Film size={20} />} label={t.nav_cinema} onClick={() => setCurrentView('cinema')} />
-            <NavItem active={currentView === 'cronos'} icon={<Clock size={20} />} label={t.nav_cronos} onClick={() => setCurrentView('cronos')} />
+            <NavItem active={currentView === 'dashboard'} icon={<Home size={20} />} label={t.nav_home} onClick={() => handleNavigate('dashboard')} />
+            <NavItem active={currentView === 'library'} icon={<BookOpen size={20} />} label={t.nav_library} onClick={() => handleNavigate('library')} />
+            <NavItem active={currentView === 'chat'} icon={<MessageSquare size={20} />} label={t.nav_chat} onClick={() => handleNavigate('chat')} />
+            <NavItem active={currentView === 'cinema'} icon={<Film size={20} />} label={t.nav_cinema} onClick={() => handleNavigate('cinema')} />
+            <NavItem active={currentView === 'cronos'} icon={<Clock size={20} />} label={t.nav_cronos} onClick={() => handleNavigate('cronos')} />
           </nav>
         </div>
 
@@ -230,7 +275,7 @@ export default function App() {
           <button 
             onClick={() => {
               setChatMessages([{ role: 'model', text: t.chat_welcome }]);
-              setCurrentView('chat');
+              handleNavigate('chat');
             }}
             className="flex w-full items-center justify-center gap-2 rounded bg-primary py-3.5 text-sm font-black uppercase text-black transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)] hover:bg-white hover:shadow-[4px_4px_0px_0px_#fdf001] hover:-translate-y-1 hover:translate-x-1 active:translate-y-0 active:translate-x-0 active:shadow-none border-2 border-transparent"
           >
@@ -251,16 +296,18 @@ export default function App() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col relative z-10 overflow-hidden">
-        <AnimatePresence mode="wait">
-          {currentView === 'landing' && <LandingView onStart={() => setCurrentView('dashboard')} t={t} />}
+      <main className="flex-1 flex flex-col relative z-10 overflow-hidden perspective-1200">
+        <AnimatePresence mode="wait" custom={direction}>
+          {currentView === 'landing' && <LandingView onStart={() => handleNavigate('dashboard')} t={t} direction={direction} />}
           {currentView === 'dashboard' && (
             <DashboardView 
-              onNavigate={setCurrentView} 
+              onNavigate={handleNavigate} 
               readings={myReadings} 
               onRemoveReading={removeFromReadings} 
               onRead={setActiveReaderBook}
+              onShowRebelMap={() => setShowRebelMap(true)}
               t={t}
+              direction={direction}
             />
           )}
           {currentView === 'chat' && (
@@ -271,15 +318,52 @@ export default function App() {
               onSend={handleSendMessage} 
               isTyping={isTyping} 
               t={t}
-              onNavigate={setCurrentView}
+              onNavigate={handleNavigate}
+              direction={direction}
             />
           )}
-          {currentView === 'cinema' && <CinemaView t={t} onNavigate={setCurrentView} />}
+          {currentView === 'cinema' && <CinemaView t={t} onNavigate={handleNavigate} direction={direction} />}
           {currentView === 'library' && (
-            <LibraryView t={t} onNavigate={setCurrentView} />
+            <LibraryView t={t} onNavigate={handleNavigate} direction={direction} ai={aiRef.current} />
           )}
           {currentView === 'cronos' && (
-            <CronosView t={t} onNavigate={setCurrentView} />
+            <CronosView t={t} onNavigate={handleNavigate} direction={direction} />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {showRebelMap && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 md:p-12 backdrop-blur-xl"
+            >
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                className="relative w-full max-w-6xl aspect-video bg-punk-black border border-white/10 shadow-[0_0_50px_rgba(253,240,1,0.2)] overflow-hidden"
+              >
+                <button 
+                  onClick={() => setShowRebelMap(false)}
+                  className="absolute top-4 right-4 z-50 p-3 bg-primary text-black rounded-full hover:bg-white transition-all shadow-xl"
+                >
+                  <Plus size={24} className="rotate-45" />
+                </button>
+                <iframe 
+                  src="https://www.youtube.com/embed/i0psGEZAfPU?autoplay=1" 
+                  className="w-full h-full border-none"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title="Mapa de la Rebeldía"
+                />
+                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none">
+                  <h3 className="text-2xl font-black text-white uppercase font-serif italic tracking-tighter">Mapa de la Rebeldía</h3>
+                  <p className="text-primary font-bold text-xs uppercase tracking-widest mt-1">Filosofía Z - Manual de la rebeldía filosófica</p>
+                </div>
+              </motion.div>
+            </motion.div>
           )}
         </AnimatePresence>
 
@@ -313,14 +397,95 @@ function NavItem({ active, icon, label, onClick }: { active: boolean, icon: Reac
 
 // --- VIEWS ---
 
-function LandingView({ onStart, t }: { onStart: () => void, t: any }) {
+// --- COMPONENTS ---
+
+function GraffitiOverlay({ phrases = [], icons = [] }: { phrases?: string[], icons?: string[] }) {
+  const items = React.useMemo(() => {
+    const phraseItems = phrases.map(phrase => ({
+      type: 'phrase',
+      content: phrase,
+      style: {
+        top: `${Math.random() * 80 + 10}%`,
+        left: `${Math.random() * 80 + 10}%`,
+        transform: `rotate(${Math.random() * 40 - 20}deg)`,
+        fontSize: `${Math.random() * 2 + 1}rem`,
+        color: Math.random() > 0.5 ? '#fdf001' : '#ffffff'
+      }
+    }));
+    const iconItems = icons.map(icon => ({
+      type: 'icon',
+      content: icon,
+      style: {
+        top: `${Math.random() * 80 + 10}%`,
+        left: `${Math.random() * 80 + 10}%`,
+        transform: `rotate(${Math.random() * 360}deg)`,
+        width: `${Math.random() * 100 + 50}px`,
+        height: `${Math.random() * 100 + 50}px`,
+        color: Math.random() > 0.5 ? '#fdf001' : '#ffffff'
+      }
+    }));
+    const lineItems = Array.from({ length: 5 }).map(() => ({
+      type: 'line',
+      style: {
+        top: `${Math.random() * 100}%`,
+        left: `${Math.random() * 10}%`,
+        width: `${Math.random() * 80 + 20}%`,
+        transform: `rotate(${Math.random() * 10 - 5}deg)`,
+        color: Math.random() > 0.5 ? '#fdf001' : '#ffffff'
+      }
+    }));
+    return [...phraseItems, ...iconItems, ...lineItems];
+  }, [phrases, icons]);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
+      <div className="grunge-texture" />
+      {items.map((item: any, i) => (
+        <div 
+          key={`${item.type}-${i}`}
+          className={`${item.type === 'phrase' ? 'graffiti-text' : item.type === 'icon' ? 'graffiti-svg' : 'distressed-line'} animate-spray`}
+          style={item.style as React.CSSProperties}
+        >
+          {item.type === 'phrase' ? item.content : item.type === 'icon' ? (
+            <>
+              {item.content === 'anarchy' && (
+                <svg viewBox="0 0 100 100" fill="currentColor">
+                  <path d="M50 5 L10 90 L90 90 Z M50 20 L75 75 L25 75 Z" />
+                  <circle cx="50" cy="55" r="40" stroke="currentColor" strokeWidth="5" fill="none" />
+                </svg>
+              )}
+              {item.content === 'star' && (
+                <svg viewBox="0 0 100 100" fill="currentColor">
+                  <path d="M50 5 L61 39 L95 39 L67 60 L78 94 L50 73 L22 94 L33 60 L5 39 L39 39 Z" />
+                </svg>
+              )}
+              {item.content === 'bolt' && (
+                <svg viewBox="0 0 100 100" fill="currentColor">
+                  <path d="M60 5 L20 60 L50 60 L40 95 L80 40 L50 40 Z" />
+                </svg>
+              )}
+            </>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function LandingView({ onStart, t, direction }: { onStart: () => void, t: any, direction: number }) {
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="relative h-full w-full flex items-center px-16 overflow-hidden"
+      custom={direction}
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="relative h-full w-full flex items-center px-16 overflow-hidden backface-hidden preserve-3d"
     >
+      <GraffitiOverlay 
+        phrases={["NO FUTURE", "KAOS", "RESISTIR", "DIY"]} 
+        icons={["anarchy", "bolt"]} 
+      />
       <div className="absolute inset-0 z-0">
         <img 
           src="https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?q=80&w=2000&auto=format&fit=crop" 
@@ -364,14 +529,20 @@ function LandingView({ onStart, t }: { onStart: () => void, t: any }) {
   );
 }
 
-function DashboardView({ onNavigate, readings, onRemoveReading, onRead, t }: { onNavigate: (v: View) => void, readings: Book[], onRemoveReading: (id: string) => void, onRead: (b: Book) => void, t: any }) {
+function DashboardView({ onNavigate, readings, onRemoveReading, onRead, onShowRebelMap, t, direction }: { onNavigate: (v: View) => void, readings: Book[], onRemoveReading: (id: string) => void, onRead: (b: Book) => void, onShowRebelMap: () => void, t: any, direction: number }) {
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="flex-1 overflow-y-auto p-12 custom-scrollbar"
+      custom={direction}
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="flex-1 overflow-y-auto p-12 custom-scrollbar backface-hidden preserve-3d relative"
     >
+      <GraffitiOverlay 
+        phrases={["PENSAR ES RESISTIR", "Z", "DECONSTRUCCION", "REBELDIA"]} 
+        icons={["star", "anarchy"]} 
+      />
       <div className="flex items-end justify-between mb-12 border-b border-white/10 pb-4">
         <div>
           <span className="text-primary font-mono text-xs mb-2 block">{t.dashboard_status}</span>
@@ -427,11 +598,9 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead, t }: { o
         className="mb-16 relative group"
       >
         <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-orange-500/20 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-        <a 
-          href="https://youtu.be/i0psGEZAfPU?si=TxJKbbHSi0elPOf2" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="relative block bg-punk-black border-2 border-white/10 overflow-hidden rounded-sm shadow-2xl group/link"
+        <button 
+          onClick={onShowRebelMap}
+          className="relative block w-full bg-punk-black border-2 border-white/10 overflow-hidden rounded-sm shadow-2xl group/link text-left"
         >
           <div className="absolute top-4 left-4 z-10 bg-primary text-black px-3 py-1 font-black text-[10px] uppercase tracking-widest -rotate-2">
             Mapa de la Rebeldía
@@ -456,7 +625,7 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead, t }: { o
               Un recorrido visual por las grietas del pensamiento establecido. Cuestiona, deconstruye y vuelve a armar tu realidad.
             </p>
           </div>
-        </a>
+        </button>
       </motion.div>
 
       <div className="mb-16">
@@ -633,7 +802,7 @@ function ModuleCard({ title, subtitle, tag, footer, image, isAI, progress, onCli
   );
 }
 
-function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, onNavigate }: any) {
+function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, onNavigate, direction }: any) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -644,11 +813,17 @@ function ChatView({ messages, userInput, setUserInput, onSend, isTyping, t, onNa
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="flex-1 flex overflow-hidden"
+      custom={direction}
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="flex-1 flex overflow-hidden backface-hidden preserve-3d relative"
     >
+      <GraffitiOverlay 
+        phrases={["DIALECTICA", "KAOS", "DUDA", "DESTRUYE"]} 
+        icons={["bolt"]} 
+      />
       <div className="flex-1 flex flex-col bg-surface-dark/50 overflow-hidden">
         <header className="flex items-center justify-between px-8 py-5 border-b border-white/10 bg-punk-black/95 z-20 shadow-lg">
           <div className="flex items-center gap-5">
@@ -828,71 +1003,32 @@ function ChatMessage({ role, content, reference, isTyping, t }: any) {
   );
 }
 
-function CinemaView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }) {
+function CinemaView({ t, onNavigate, direction }: { t: any, onNavigate: (v: View) => void, direction: number }) {
   const [activeProblem, setActiveProblem] = React.useState(PHILOSOPHICAL_PROBLEMS[0]);
   const [selectedVideo, setSelectedVideo] = React.useState<Video | null>(null);
+  const synopsisRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (selectedVideo && synopsisRef.current) {
+      synopsisRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [selectedVideo]);
 
   const filteredVideos = CINEMA_CATALOG.filter(v => v.category === activeProblem);
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="flex-1 overflow-y-auto custom-scrollbar bg-background-dark relative"
+      custom={direction}
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="flex-1 overflow-y-auto custom-scrollbar bg-background-dark relative backface-hidden preserve-3d"
     >
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03] film-grain"></div>
-      
-      <AnimatePresence>
-        {selectedVideo && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 md:p-12"
-          >
-            <button 
-              onClick={() => setSelectedVideo(null)}
-              className="absolute top-8 right-8 text-white/50 hover:text-primary transition-colors flex items-center gap-2 uppercase font-black tracking-widest text-xs"
-            >
-              {t.cinema_close} <Plus className="rotate-45" size={20} />
-            </button>
-            
-            <div className="w-full max-w-4xl bg-surface-dark border-2 border-primary/20 p-8 md:p-12 shadow-[0_0_50px_rgba(253,240,1,0.1)] relative overflow-hidden">
-              <div className="absolute top-0 right-0 opacity-10 pointer-events-none select-none text-[80px] font-black leading-none text-white rotate-12 translate-x-1/4 -translate-y-1/4">CINEMA</div>
-              
-              <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
-                <img 
-                  src={selectedVideo.cover} 
-                  alt={selectedVideo.title} 
-                  className="w-48 h-72 object-cover border border-white/10 grayscale hover:grayscale-0 transition-all duration-500 shadow-2xl"
-                />
-                <div className="flex-1 space-y-6">
-                  <div>
-                    <p className="text-primary font-black uppercase text-xs tracking-[0.3em] mb-2">{t.cinema_synopsis}</p>
-                    <h3 className="text-4xl md:text-5xl font-black text-white font-serif italic uppercase tracking-tighter leading-none" translate="no">
-                      {selectedVideo.title}
-                    </h3>
-                  </div>
-                  <p className="text-gray-300 font-serif italic text-lg leading-relaxed border-l-2 border-primary/50 pl-6">
-                    {selectedVideo.synopsis}
-                  </p>
-                  <div className="pt-4">
-                    <a 
-                      href={selectedVideo.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-3 bg-primary text-black px-10 py-5 font-black text-sm uppercase tracking-widest hover:bg-white transition-all shadow-[8px_8px_0px_0px_rgba(255,255,255,0.15)] hover:shadow-[8px_8px_0px_0px_#fdf001] hover:-translate-y-1 hover:translate-x-1"
-                    >
-                      {t.cinema_view_telegram} <ExternalLink size={18} />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <GraffitiOverlay 
+        phrases={["CINESOFIA", "PUNK", "RADICAL"]} 
+        icons={["anarchy"]} 
+      />
 
       <div className="absolute top-8 left-8 z-50">
         <button 
@@ -905,6 +1041,7 @@ function CinemaView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
       </div>
 
       <section className="relative w-full h-[70vh] flex items-end pb-24 px-12 overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.08] film-grain"></div>
         <div className="absolute inset-0 z-0">
           <img 
             className="w-full h-full object-cover object-center opacity-50 grayscale contrast-125" 
@@ -1037,6 +1174,92 @@ function CinemaView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
             ))}
           </div>
         </section>
+
+        {/* Surrealist Dali Synopsis Section */}
+        <div ref={synopsisRef}>
+          <AnimatePresence>
+            {selectedVideo && (
+              <motion.section
+                initial={{ opacity: 0, y: 100, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 100, scale: 0.9 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="mt-24 p-12 md:p-20 relative overflow-hidden border-t border-white/5"
+              >
+                {/* Dali Surrealist Background */}
+                <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#e6d5b8]/20 via-[#d4a373]/20 to-[#1b4332]/20 blur-3xl" />
+                <div className="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
+                  <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-500/10 rounded-full blur-[100px] animate-pulse" />
+                  <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+                </div>
+
+                <div className="relative z-10 max-w-6xl mx-auto">
+                  <div className="flex flex-col md:flex-row gap-16 items-center">
+                    <div className="relative shrink-0 perspective-1200">
+                      {/* Melting frame effect */}
+                      <div className="absolute -inset-8 bg-primary/30 blur-2xl rounded-[40%_60%_70%_30%/40%_50%_60%_50%] animate-blob" />
+                      <motion.img 
+                        initial={{ rotateY: -20, rotateX: 10 }}
+                        animate={{ rotateY: 0, rotateX: 0 }}
+                        transition={{ duration: 1.2 }}
+                        src={selectedVideo.cover} 
+                        alt={selectedVideo.title} 
+                        className="w-72 h-[450px] object-cover relative z-10 shadow-[20px_20px_60px_rgba(0,0,0,0.8)] grayscale hover:grayscale-0 transition-all duration-1000 rounded-[15px_45px_15px_75px/75px_15px_60px_15px] border-4 border-white/10"
+                      />
+                      {/* Surrealist shadow */}
+                      <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-4/5 h-8 bg-black/40 blur-xl rounded-full" />
+                    </div>
+
+                    <div className="flex-1 space-y-10">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <p className="text-primary font-black uppercase text-xs tracking-[0.6em] animate-pulse">{t.cinema_synopsis}</p>
+                          <div className="h-px flex-1 bg-gradient-to-r from-primary/50 to-transparent" />
+                        </div>
+                        <h3 className="text-6xl md:text-8xl font-black text-white font-serif italic uppercase tracking-tighter leading-[0.85] drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] transform -skew-x-6">
+                          {selectedVideo.title}
+                        </h3>
+                      </div>
+                      
+                      <div className="relative group">
+                        <div className="absolute -left-10 top-0 bottom-0 w-1.5 bg-gradient-to-b from-primary via-orange-500 to-transparent rounded-full shadow-[0_0_15px_rgba(253,240,1,0.5)]" />
+                        <p className="text-3xl md:text-4xl text-gray-100 font-serif italic leading-relaxed tracking-tight font-light">
+                          {selectedVideo.synopsis}
+                        </p>
+                      </div>
+
+                      <div className="pt-10 flex flex-wrap gap-8">
+                        <a 
+                          href={selectedVideo.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group relative inline-flex items-center gap-6 bg-white text-black px-14 py-7 font-black text-sm uppercase tracking-widest transition-all hover:bg-primary hover:scale-110 rounded-[45px_15px_60px_10px/15px_45px_10px_60px] shadow-2xl"
+                        >
+                          <span className="relative z-10">{t.cinema_view_telegram}</span>
+                          <ExternalLink size={24} className="relative z-10 group-hover:rotate-12 transition-transform" />
+                          <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-100 transition-opacity rounded-inherit" />
+                        </a>
+                        <button 
+                          onClick={() => setSelectedVideo(null)}
+                          className="px-10 py-7 border-2 border-white/10 text-white/40 hover:text-white hover:border-white/40 transition-all uppercase font-black tracking-widest text-xs rounded-full backdrop-blur-sm hover:bg-white/5"
+                        >
+                          {t.cinema_close}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Surrealist floating elements (CSS only) */}
+                <div className="absolute top-20 right-20 size-12 border-2 border-primary/20 rounded-full animate-bounce" style={{ animationDuration: '4s' }} />
+                <div className="absolute bottom-40 left-10 size-8 bg-orange-500/10 rotate-45 animate-pulse" />
+                
+                {/* Melting bottom border */}
+                <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-primary/30 to-transparent blur-sm" />
+              </motion.section>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </motion.div>
   );
@@ -1084,7 +1307,91 @@ function VideoCard({ video, onSelect }: any) {
   );
 }
 
-function LibraryView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }) {
+function BookCard({ book, ai, i }: { book: any, ai: PhilosophyAI | null, i: number }) {
+  const [summary, setSummary] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(false);
+  const [showSummary, setShowSummary] = React.useState(false);
+
+  const handleGenerateSummary = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!ai) return;
+    setLoading(true);
+    try {
+      const result = await ai.generateSummary(book.title);
+      setSummary(result);
+      setShowSummary(true);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="relative group" onMouseEnter={() => summary && setShowSummary(true)} onMouseLeave={() => setShowSummary(false)}>
+      <a 
+        href={book.link} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="block"
+      >
+        <motion.div 
+          whileHover={{ scale: 1.05, rotate: i % 2 === 0 ? 1 : -1 }}
+          className="relative aspect-[3/4] bg-punk-black border border-white/10 rounded-sm overflow-hidden shadow-xl group cursor-pointer"
+        >
+          <img 
+            src={book.url} 
+            alt={book.title}
+            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+            <h4 className="text-white font-black text-xs uppercase leading-tight">{book.title}</h4>
+          </div>
+        </motion.div>
+      </a>
+
+      <button
+        onClick={handleGenerateSummary}
+        disabled={loading}
+        className="absolute top-2 right-2 z-20 p-2 bg-primary/20 hover:bg-primary text-primary hover:text-black rounded-full backdrop-blur-md border border-primary/40 transition-all shadow-lg"
+        title="Generar Resumen Punk"
+      >
+        {loading ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />}
+      </button>
+
+      <AnimatePresence>
+        {showSummary && summary && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.9 }}
+            className="absolute inset-x-0 -bottom-2 translate-y-full z-30 p-4 bg-punk-black border border-primary/50 shadow-[0_0_30px_rgba(253,240,1,0.2)] rounded-sm pointer-events-none"
+          >
+            <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-punk-black border-t border-l border-primary/50 rotate-45"></div>
+            <p className="text-[10px] text-primary font-black uppercase tracking-widest mb-2 flex items-center gap-2">
+              <Bolt size={10} /> Resumen Punk
+            </p>
+            <p className="text-xs text-white font-serif italic leading-relaxed">
+              {summary}
+            </p>
+            <div className="mt-2 h-0.5 w-full bg-primary/20 overflow-hidden">
+              <motion.div 
+                initial={{ x: '-100%' }}
+                animate={{ x: '100%' }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                className="h-full w-1/2 bg-primary"
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function LibraryView({ t, onNavigate, direction, ai }: { t: any, onNavigate: (v: View) => void, direction: number, ai: PhilosophyAI | null }) {
   const driveFolderId = '1nV0lSIwVuulm9cSnanOo_LHZC-iCWP2l';
   const featuredFileId = '1JEKRq0dRDLCFfEWyIQl179jXvmzRJxeV';
   const driveUrl = `https://drive.google.com/embeddedfolderview?id=${driveFolderId}#list`;
@@ -1092,11 +1399,17 @@ function LibraryView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void 
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="flex-1 flex flex-col bg-[#121212] relative overflow-y-auto custom-scrollbar"
+      custom={direction}
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="flex-1 flex flex-col bg-[#121212] relative overflow-y-auto custom-scrollbar backface-hidden preserve-3d"
     >
+      <GraffitiOverlay 
+        phrases={["LIBROS PROHIBIDOS", "READ OR DIE", "CONOCIMIENTO"]} 
+        icons={["star"]} 
+      />
       {/* Parchment Pattern Overlay */}
       <div className="absolute inset-0 parchment-bg opacity-[0.05] pointer-events-none" />
 
@@ -1181,29 +1494,7 @@ function LibraryView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void 
                 link: "https://drive.google.com/file/d/1IO2kPrwf4CoQ-w0H82jS38CEPiR9tZl4/view?usp=sharing"
               }
             ].map((book, i) => (
-              <a 
-                key={i} 
-                href={book.link} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <motion.div 
-                  whileHover={{ scale: 1.05, rotate: i % 2 === 0 ? 1 : -1 }}
-                  className="relative aspect-[3/4] bg-punk-black border border-white/10 rounded-sm overflow-hidden shadow-xl group cursor-pointer"
-                >
-                  <img 
-                    src={book.url} 
-                    alt={book.title}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-primary/90">
-                    <p className="text-black font-black text-[10px] uppercase leading-tight">{book.title}</p>
-                  </div>
-                </motion.div>
-              </a>
+              <BookCard key={i} book={book} ai={ai} i={i} />
             ))}
           </div>
         </section>
@@ -1264,7 +1555,7 @@ function LibraryView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void 
   );
 }
 
-function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }) {
+function CronosView({ t, onNavigate, direction }: { t: any, onNavigate: (v: View) => void, direction: number }) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const [activeNode, setActiveNode] = React.useState<CronosNode>(CRONOS_TIMELINE[0]);
   const [isFrozen, setIsFrozen] = React.useState(false);
@@ -1299,15 +1590,21 @@ function CronosView({ t, onNavigate }: { t: any, onNavigate: (v: View) => void }
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className={`flex-1 flex flex-col relative overflow-hidden transition-all duration-1000 ${isFrozen ? 'filter grayscale brightness-50' : ''}`}
+      custom={direction}
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className={`flex-1 flex flex-col relative overflow-hidden transition-all duration-1000 backface-hidden preserve-3d ${isFrozen ? 'filter grayscale brightness-50' : ''}`}
       style={{ 
         backgroundColor: activeNode.aesthetic.color + '10',
         filter: `brightness(${activeNode.aesthetic.brightness}) ${isFrozen ? 'grayscale(1) brightness(0.5)' : ''}`
       }}
     >
+      <GraffitiOverlay 
+        phrases={["ZEITGEIST", "CRONOS", "HISTORIA"]} 
+        icons={["bolt"]} 
+      />
       {/* Background Parallax */}
       <div className="absolute inset-0 z-0">
         <AnimatePresence mode="wait">

@@ -37,4 +37,10 @@ export class PhilosophyAI {
     const response: GenerateContentResponse = await this.chat.sendMessage({ message });
     return response.text || "El silencio es a veces la respuesta más profunda, pero en este caso, hubo un error en la conexión.";
   }
+
+  async generateSummary(bookTitle: string): Promise<string> {
+    const prompt = `Genera un resumen punk, rebelde y conciso (máximo 150 caracteres) de las ideas filosóficas centrales del libro "${bookTitle}". Usa un tono directo, crítico y que invite a la acción o al cuestionamiento radical.`;
+    const response: GenerateContentResponse = await this.chat.sendMessage({ message: prompt });
+    return response.text || "Sin palabras para este caos.";
+  }
 }
