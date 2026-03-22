@@ -184,6 +184,27 @@
   .animate-blob {
     animation: blob 10s infinite linear;
   }
+
+  @keyframes glitch-subtle {
+    0%, 100% { text-shadow: 0 0 0 transparent; transform: translate(0); }
+    92% { text-shadow: 0 0 0 transparent; transform: translate(0); }
+    93% { text-shadow: 1px 0 #ff00c1, -1px 0 #00fff9; transform: translate(1px, -1px); }
+    94% { text-shadow: -1px 0 #ff00c1, 1px 0 #00fff9; transform: translate(-1px, 1px); }
+    95% { text-shadow: 0 0 0 transparent; transform: translate(0); }
+  }
+
+  .animate-glitch-subtle {
+    animation: glitch-subtle 4s infinite;
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+  }
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Open+Sans:wght@300;400;600&family=JetBrains+Mono:wght@400;500&family=Special+Elite&display=swap');

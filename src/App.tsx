@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, BookOpen, MessageSquare, Film, Plus, History, Brain, Bolt, Star, Info, Bookmark, ExternalLink, Download, Search, Send, Trash2, Eye, Cloud, Loader2, Globe, Clock, Music, Zap, MessageCircle, MapPin, Sparkles, Coffee, ArrowLeft, Youtube } from 'lucide-react';
+import { Home, BookOpen, MessageSquare, Film, Plus, History, Brain, Bolt, Star, Info, Bookmark, ExternalLink, Download, Search, Send, Trash2, Eye, Cloud, Loader2, Globe, Clock, Music, Zap, MessageCircle, MapPin, Sparkles, Coffee, ArrowLeft, Youtube, Pencil, Lightbulb, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PhilosophyAI, Message } from './services/geminiService';
 import { Book, downloadFile } from './services/libraryService';
@@ -66,6 +66,20 @@ export default function App() {
   const [activeReaderBook, setActiveReaderBook] = React.useState<Book | null>(null);
   const [downloadProgress, setDownloadProgress] = React.useState<Record<string, number>>({});
   
+  const [isMusicPlaying, setIsMusicPlaying] = React.useState(false);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
+
+  const toggleMusic = () => {
+    if (audioRef.current) {
+      if (isMusicPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(err => console.error("Audio play failed:", err));
+      }
+      setIsMusicPlaying(!isMusicPlaying);
+    }
+  };
+
   const aiRef = React.useRef<PhilosophyAI | null>(null);
 
   const t = {
@@ -240,6 +254,35 @@ export default function App() {
       <div className="texture-overlay" />
       <div className="scanline" />
 
+      <audio 
+        ref={audioRef} 
+        src="https://www.dropbox.com/scl/fi/dgtw2ebkuypk2h002yru5/Palabras-versi-n-punk-rock.mp3?rlkey=76fe5npz1p5pfh66zuw49h2q4&st=fcttota3&raw=1" 
+        loop 
+      />
+
+      {/* Floating Music Toggle */}
+      <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-center gap-2">
+        <AnimatePresence>
+          {isMusicPlaying && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="bg-primary text-black text-[10px] font-black px-2 py-0.5 uppercase tracking-tighter mb-1 animate-pulse"
+            >
+              On Air: Palabras
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <button 
+          onClick={toggleMusic}
+          className={`size-14 rounded-full flex items-center justify-center transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] border-2 ${isMusicPlaying ? 'bg-primary border-white animate-spin-slow' : 'bg-punk-black border-primary text-primary hover:bg-primary hover:text-black'}`}
+          title={isMusicPlaying ? "Pausar Música" : "Escuchar Palabras (Punk Rock)"}
+        >
+          <Music size={24} className={isMusicPlaying ? 'animate-pulse' : ''} />
+        </button>
+      </div>
+
       {/* Sidebar - Only visible in non-landing views or as a persistent nav */}
       <aside className="hidden md:flex flex-col w-72 border-r border-white/10 bg-punk-black/90 backdrop-blur-sm p-6 justify-between shrink-0 relative z-20">
         <div className="flex flex-col gap-10">
@@ -260,6 +303,7 @@ export default function App() {
             <NavItem active={currentView === 'chat'} icon={<MessageSquare size={20} />} label={t.nav_chat} onClick={() => handleNavigate('chat')} />
             <NavItem active={currentView === 'cinema'} icon={<Film size={20} />} label={t.nav_cinema} onClick={() => handleNavigate('cinema')} />
             <NavItem active={currentView === 'cronos'} icon={<Clock size={20} />} label={t.nav_cronos} onClick={() => handleNavigate('cronos')} />
+            <div className="h-px bg-white/5 my-2" />
           </nav>
         </div>
 
@@ -473,6 +517,12 @@ function GraffitiOverlay({ phrases = [], icons = [] }: { phrases?: string[], ico
 }
 
 function LandingView({ onStart, t, direction }: { onStart: () => void, t: any, direction: number }) {
+  const [showHand, setShowHand] = React.useState(true);
+  const [isExiting, setIsExiting] = React.useState(false);
+
+  const title1 = t.landing_title_1;
+  const title2 = t.landing_title_2;
+
   return (
     <motion.div 
       custom={direction}
@@ -500,10 +550,80 @@ function LandingView({ onStart, t, direction }: { onStart: () => void, t: any, d
         <div className="inline-block bg-primary text-black font-bold uppercase text-xs px-2 py-1 mb-4 tracking-widest -rotate-2">
           {t.landing_manifesto}
         </div>
-        <h1 className="text-5xl md:text-9xl font-black uppercase italic leading-[0.85] text-white font-serif tracking-tighter">
-          {t.landing_title_1} <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-yellow-200" style={{ WebkitTextStroke: '1px #fdf001' }}>{t.landing_title_2}</span>
-        </h1>
+        
+        <div className="relative">
+          {/* Writing Hand Animation */}
+          <AnimatePresence>
+            {showHand && (
+              <motion.div
+                initial={{ x: -50, y: 50, opacity: 0, scale: 1 }}
+                animate={isExiting ? {
+                  scale: [1, 1.5, 10],
+                  opacity: [1, 1, 0],
+                  z: [0, 100, 1000],
+                  x: [null, 0],
+                  y: [null, 0],
+                  transition: { duration: 1.5, ease: "easeIn" }
+                } : {
+                  x: [0, 100, 200, 300, 0, 100, 200, 300],
+                  y: [0, -10, 10, -10, 80, 70, 90, 70],
+                  opacity: 1,
+                  transition: { 
+                    duration: 4, 
+                    times: [0, 0.15, 0.3, 0.45, 0.5, 0.65, 0.8, 1],
+                    ease: "linear" 
+                  }
+                }}
+                onAnimationComplete={() => {
+                  if (!isExiting) {
+                    setIsExiting(true);
+                  } else {
+                    setShowHand(false);
+                  }
+                }}
+                className="absolute z-50 pointer-events-none"
+                style={{ top: '10%', left: '0%' }}
+              >
+                <div className="relative flex flex-col items-center">
+                  <div className="size-20 bg-primary text-black rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(253,240,1,0.6)] border-4 border-white animate-pulse">
+                    <div className="relative">
+                      <Lightbulb size={40} className="text-black" />
+                      <HelpCircle size={18} className="absolute -top-1 -right-1 bg-white rounded-full text-black border border-black" />
+                    </div>
+                  </div>
+                  {/* Stylized "Character" body/trail */}
+                  <div className="w-2 h-24 bg-gradient-to-b from-primary to-transparent opacity-50 blur-[2px]" />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <h1 className="text-5xl md:text-9xl font-black uppercase italic leading-[0.85] text-white font-serif tracking-tighter">
+            {title1.split('').map((char: string, i: number) => (
+              <motion.span
+                key={`t1-${i}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: i * 0.1 + 0.5 }}
+              >
+                {char}
+              </motion.span>
+            ))}
+            <br />
+            {title2.split('').map((char: string, i: number) => (
+              <motion.span
+                key={`t2-${i}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: (i + title1.length) * 0.1 + 0.8 }}
+                className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-yellow-200" 
+                style={{ WebkitTextStroke: '1px #fdf001' }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </h1>
+        </div>
         
         <div className="mt-8 flex flex-col md:flex-row items-start md:items-center gap-6 border-l-4 border-primary pl-6">
           <p className="text-lg md:text-2xl font-light italic text-slate-200 max-w-lg font-serif">
@@ -1065,7 +1185,7 @@ function CinemaView({ t, onNavigate, direction }: { t: any, onNavigate: (v: View
                 onError={(e) => { e.currentTarget.src = "https://picsum.photos/seed/cinesofia/200/200?grayscale"; }}
               />
             </div>
-            <h2 className="text-6xl md:text-8xl font-black leading-[0.9] text-white italic tracking-tighter">
+            <h2 className="text-6xl md:text-8xl font-black leading-[0.9] text-white italic tracking-tighter animate-glitch-subtle">
               {t.cinema_title.split(' ')[0]} <br />
               <span className="text-primary font-serif not-italic">{t.cinema_title.split(' ')[1]}</span> {t.cinema_title.split(' ').slice(2).join(' ')}
             </h2>
@@ -1639,6 +1759,22 @@ function CronosView({ t, onNavigate, direction }: { t: any, onNavigate: (v: View
             <p className="text-[10px] md:text-xs text-primary font-mono mt-1 tracking-widest uppercase">Línea del Tiempo Educativa // {activeNode.year}</p>
           </div>
         </div>
+
+        {/* Audio Control moved to top right */}
+        <div className="flex items-center gap-4">
+          <audio 
+            ref={audioRef}
+            src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" 
+            loop
+          />
+          <button 
+            onClick={() => setIsMuted(!isMuted)}
+            className="size-12 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-all shadow-[0_0_15px_rgba(253,240,1,0.1)]"
+            title={isMuted ? "Activar Sonido" : "Silenciar"}
+          >
+            {isMuted ? <Music size={20} className="opacity-50" /> : <Music size={20} className="animate-pulse" />}
+          </button>
+        </div>
       </div>
 
       {/* Horizontal Timeline Container */}
@@ -1667,7 +1803,7 @@ function CronosView({ t, onNavigate, direction }: { t: any, onNavigate: (v: View
                 <div className="inline-flex items-center gap-3 bg-primary text-black px-4 py-1 font-black text-sm uppercase tracking-tighter -rotate-2">
                   <Clock size={16} /> {node.year}
                 </div>
-                <h3 className="text-4xl md:text-8xl font-black text-white font-serif italic leading-none tracking-tighter">
+                <h3 className="text-3xl md:text-6xl font-black text-white font-serif italic leading-none tracking-tighter">
                   {node.title}
                 </h3>
                 <p className="text-lg md:text-2xl text-primary font-bold uppercase tracking-tight">{node.philosopher}</p>
@@ -1761,22 +1897,6 @@ function CronosView({ t, onNavigate, direction }: { t: any, onNavigate: (v: View
             className={`size-3 rounded-full transition-all ${activeNode.id === node.id ? 'bg-primary w-12' : 'bg-white/20 hover:bg-white/40'}`}
           />
         ))}
-      </div>
-
-      {/* Audio Control */}
-      <div className="absolute bottom-8 right-8 z-20 flex items-center gap-4">
-        <audio 
-          ref={audioRef}
-          src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" 
-          loop
-        />
-        <button 
-          onClick={() => setIsMuted(!isMuted)}
-          className="size-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-all"
-          title={isMuted ? "Activar Sonido" : "Silenciar"}
-        >
-          {isMuted ? <Music size={18} className="opacity-50" /> : <Music size={18} className="animate-pulse" />}
-        </button>
       </div>
     </motion.div>
   );
