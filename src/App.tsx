@@ -1126,11 +1126,16 @@ function ChatMessage({ role, content, reference, isTyping, t }: any) {
 function CinemaView({ t, onNavigate, direction }: { t: any, onNavigate: (v: View) => void, direction: number }) {
   const [activeProblem, setActiveProblem] = React.useState(PHILOSOPHICAL_PROBLEMS[0]);
   const [selectedVideo, setSelectedVideo] = React.useState<Video | null>(null);
+  const [showPlayer, setShowPlayer] = React.useState(false);
+  const [isVideoLoading, setIsVideoLoading] = React.useState(true);
   const synopsisRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    if (selectedVideo && synopsisRef.current) {
-      synopsisRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (selectedVideo) {
+      setShowPlayer(false); // Reset player when changing video
+      if (synopsisRef.current) {
+        synopsisRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   }, [selectedVideo]);
 
@@ -1349,16 +1354,31 @@ function CinemaView({ t, onNavigate, direction }: { t: any, onNavigate: (v: View
                       </div>
 
                       <div className="pt-10 flex flex-wrap gap-8">
-                        <a 
-                          href={selectedVideo.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group relative inline-flex items-center gap-6 bg-white text-black px-14 py-7 font-black text-sm uppercase tracking-widest transition-all hover:bg-primary hover:scale-110 rounded-[45px_15px_60px_10px/15px_45px_10px_60px] shadow-2xl"
-                        >
-                          <span className="relative z-10">{t.cinema_view_telegram}</span>
-                          <ExternalLink size={24} className="relative z-10 group-hover:rotate-12 transition-transform" />
-                          <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-100 transition-opacity rounded-inherit" />
-                        </a>
+                          {(selectedVideo.url.includes('drive.google.com') || selectedVideo.url.includes('youtube.com') || selectedVideo.url.includes('youtu.be')) && (
+                            <button 
+                              onClick={() => {
+                                setShowPlayer(!showPlayer);
+                                setIsVideoLoading(true);
+                              }}
+                              className="group relative inline-flex items-center gap-6 bg-primary text-black px-14 py-7 font-black text-sm uppercase tracking-widest transition-all hover:bg-white hover:scale-110 rounded-[45px_15px_60px_10px/15px_45px_10px_60px] shadow-2xl"
+                            >
+                              <span className="relative z-10">{showPlayer ? 'Cerrar Reproductor' : 'Ver ahora en la web'}</span>
+                              <Film size={24} className="relative z-10 group-hover:rotate-12 transition-transform" />
+                              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity rounded-inherit" />
+                            </button>
+                          )}
+                        {!selectedVideo.url.includes('t.me') && (
+                          <a 
+                            href={selectedVideo.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group relative inline-flex items-center gap-6 bg-white/10 text-white px-14 py-7 font-black text-sm uppercase tracking-widest transition-all hover:bg-white hover:text-black hover:scale-110 rounded-[45px_15px_60px_10px/15px_45px_10px_60px] shadow-2xl border border-white/20"
+                          >
+                            <span className="relative z-10">Ver en fuente externa</span>
+                            <ExternalLink size={24} className="relative z-10 group-hover:rotate-12 transition-transform" />
+                            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity rounded-inherit" />
+                          </a>
+                        )}
                         <button 
                           onClick={() => setSelectedVideo(null)}
                           className="px-10 py-7 border-2 border-white/10 text-white/40 hover:text-white hover:border-white/40 transition-all uppercase font-black tracking-widest text-xs rounded-full backdrop-blur-sm hover:bg-white/5"
@@ -1366,6 +1386,60 @@ function CinemaView({ t, onNavigate, direction }: { t: any, onNavigate: (v: View
                           {t.cinema_close}
                         </button>
                       </div>
+
+                      {showPlayer && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="mt-12 w-full aspect-video bg-black border-4 border-primary/30 rounded-sm overflow-hidden shadow-[0_0_50px_rgba(253,240,1,0.2)] relative"
+                        >
+                          {isVideoLoading && (
+                            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm">
+                              <div className="relative">
+                                <motion.div 
+                                  animate={{ rotate: 360 }}
+                                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                  className="size-24 border-t-4 border-r-4 border-primary rounded-full"
+                                />
+                                <motion.div 
+                                  animate={{ rotate: -360 }}
+                                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                                  className="absolute inset-2 border-b-4 border-l-4 border-primary-light rounded-full opacity-50"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <Film className="text-primary animate-pulse" size={32} />
+                                </div>
+                              </div>
+                              <motion.div 
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5 }}
+                                className="mt-8 text-center"
+                              >
+                                <p className="text-primary font-black uppercase tracking-[0.3em] text-xs mb-2">Iniciando Proyección</p>
+                                <div className="flex gap-1 justify-center">
+                                  {[0, 1, 2].map((i) => (
+                                    <motion.div
+                                      key={i}
+                                      animate={{ opacity: [0, 1, 0] }}
+                                      transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                                      className="size-1.5 bg-primary rounded-full"
+                                    />
+                                  ))}
+                                </div>
+                              </motion.div>
+                            </div>
+                          )}
+                          <iframe 
+                            src={selectedVideo.url} 
+                            className={`w-full h-full border-none transition-opacity duration-1000 ${isVideoLoading ? 'opacity-0' : 'opacity-100'}`}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            title={selectedVideo.title}
+                            onLoad={() => setIsVideoLoading(false)}
+                          />
+                        </motion.div>
+                      )}
                     </div>
                   </div>
                 </div>
