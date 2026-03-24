@@ -1367,6 +1367,18 @@ function CinemaView({ t, onNavigate, direction }: { t: any, onNavigate: (v: View
                               <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity rounded-inherit" />
                             </button>
                           )}
+                        {selectedVideo.url.includes('t.me') && (
+                          <a 
+                            href={selectedVideo.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group relative inline-flex items-center gap-6 bg-[#0088cc] text-white px-14 py-7 font-black text-sm uppercase tracking-widest transition-all hover:bg-white hover:text-black hover:scale-110 rounded-[45px_15px_60px_10px/15px_45px_10px_60px] shadow-2xl border border-white/20"
+                          >
+                            <span className="relative z-10">Ver en Telegram</span>
+                            <MessageCircle size={24} className="relative z-10 group-hover:rotate-12 transition-transform" />
+                            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity rounded-inherit" />
+                          </a>
+                        )}
                         {!selectedVideo.url.includes('t.me') && (
                           <a 
                             href={selectedVideo.url}

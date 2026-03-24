@@ -44,7 +44,7 @@ export const CINEMA_CATALOG: Video[] = [
     id: 'v3',
     title: 'Los Simpsons',
     synopsis: 'Sátira social y crítica política. ¿Es la familia Simpson un reflejo de la decadencia de los valores occidentales o una resistencia cínica?',
-    url: 'https://drive.google.com/file/d/1GicoQgym12UD2HeMVAbJA7CBSTTvKRFG/preview',
+    url: 'https://t.me/tuspeliculas15555/32',
     cover: 'https://www.dropbox.com/scl/fi/8og9dudmbdm1ysl84x5j5/Simpsons.jpg?rlkey=drx2jtzfm0zvaxax93iyas0l0&st=jqv6g9fm&raw=1',
     category: 'Política y Sociedad'
   },
