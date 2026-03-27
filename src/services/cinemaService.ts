@@ -95,6 +95,22 @@ export const CINEMA_CATALOG: Video[] = [
     url: 'https://drive.google.com/file/d/1es3qi2uedG26_4-zp0_t0MYQPn-Hnjic/preview',
     cover: 'https://www.dropbox.com/scl/fi/4gzltawzmmyqk1msxhnr8/la-isla.jpg?rlkey=xhk3lg3yhc3wyapi2pm9av6tf&st=7afw1yjf&raw=1',
     category: 'Antropología'
+  },
+  {
+    id: 'v13',
+    title: 'X - Men',
+    synopsis: 'Una exploración sobre la alteridad y la coexistencia. ¿Qué define lo humano frente al "otro" mutante? Un análisis profundo de la relación ser humano - mutantes como metáfora de la exclusión y la identidad.',
+    url: 'https://drive.google.com/file/d/1oOzxxUi89dDAe-V96D6etuDrMW_bWAY8/preview',
+    cover: 'https://www.dropbox.com/scl/fi/5s3h2853c1r42xhvuee6k/X-Men-1.png?rlkey=5ka88fav6qfommww5juzt7tgh&st=5okeqr0w&raw=1',
+    category: 'Antropología'
+  },
+  {
+    id: 'v14',
+    title: 'La substancia',
+    synopsis: 'La obsesión por la perfección física y la juventud eterna. Una reflexión sobre la desesperación del ser humano por parecer joven y bello, y los límites éticos de la intervención sobre el propio cuerpo.',
+    url: 'https://drive.google.com/file/d/1x33r6fWzFJv0nVDKUTy_3XKf4IcpZkdC/preview',
+    cover: 'https://www.dropbox.com/scl/fi/3p4thnx11oehnqrhw0muc/La-substancia.jpeg?rlkey=xt5s6y4tul0g5iesumn91z3jv&st=92fkrz2t&raw=1',
+    category: 'Estética'
   }
 ];
 
