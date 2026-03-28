@@ -125,7 +125,7 @@ export const CINEMA_CATALOG: Video[] = [
     title: 'La pasión de Cristo',
     synopsis: 'Una reflexión sobre el sentido del sufrimiento, la finitud y el cuerpo como lugar de padecimiento. Un estudio antropológico sobre la resiliencia y la trascendencia a través del dolor.',
     url: 'https://drive.google.com/file/d/1Mw6cx_oKbOnu2SHP2WNMUIar2RzqWTWo/preview',
-    cover: 'https://www.dropbox.com/scl/fi/oc5vef1fygt9m3p6isscw/La_pasiaon_de_Cristo-731264185-large.jpg?rlkey=yrahjuli77bz79a4o24c21zrf&st=rzo4ko6z&raw=1',
+    cover: 'https://www.dropbox.com/scl/fi/e3tcieekn4zu9fdcj6czr/La-pasion-de-cristo.jpg?rlkey=p3os8hc6i0ztgg77o9xui1mth&st=7xmfphqk&raw=1',
     category: 'Antropología'
   },
   {
