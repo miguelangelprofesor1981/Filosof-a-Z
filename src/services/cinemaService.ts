@@ -100,7 +100,7 @@ export const CINEMA_CATALOG: Video[] = [
     id: 'v13',
     title: 'X - Men',
     synopsis: 'Una exploración sobre la alteridad y la coexistencia. ¿Qué define lo humano frente al "otro" mutante? Un análisis profundo de la relación ser humano - mutantes como metáfora de la exclusión y la identidad.',
-    url: 'https://drive.google.com/file/d/1oOzxxUi89dDAe-V96D6etuDrMW_bWAY8/preview',
+    url: 'https://drive.google.com/file/d/1wAbdQpz9uGrIdC_wi9IKyUKIzxZnL7Jk/preview',
     cover: 'https://www.dropbox.com/scl/fi/5s3h2853c1r42xhvuee6k/X-Men-1.png?rlkey=5ka88fav6qfommww5juzt7tgh&st=5okeqr0w&raw=1',
     category: 'Antropología'
   },
