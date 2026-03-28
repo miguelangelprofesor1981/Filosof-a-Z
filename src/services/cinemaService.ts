@@ -61,7 +61,7 @@ export const CINEMA_CATALOG: Video[] = [
     title: 'Fight Club',
     synopsis: 'Nihilismo, consumismo y la destrucción del ego. ¿Es la violencia el único camino para sentir algo real en un mundo de plástico?',
     url: 'https://drive.google.com/file/d/1fvrYeMJ4iVYD0pEHutua8tA8SbAEO_JW/preview',
-    cover: 'https://www.dropbox.com/scl/fi/68buagxows1tzt9woyedm/el-club-de-la-pelea-pelicula-david-fincher.jpeg?rlkey=b24f7jhwabr2039vtwvc5w1x3&st=a3pv5xfs&raw=1',
+    cover: 'https://www.dropbox.com/scl/fi/bhgdruobv0vrruf4ic147/el-club-de-la-pelea.jpeg?rlkey=tsualwkbqff855buri7a83177&st=9xynl2di&raw=1',
     category: 'Estética'
   },
   {
@@ -127,6 +127,30 @@ export const CINEMA_CATALOG: Video[] = [
     url: 'https://drive.google.com/file/d/1Mw6cx_oKbOnu2SHP2WNMUIar2RzqWTWo/preview',
     cover: 'https://www.dropbox.com/scl/fi/oc5vef1fygt9m3p6isscw/La_pasiaon_de_Cristo-731264185-large.jpg?rlkey=yrahjuli77bz79a4o24c21zrf&st=rzo4ko6z&raw=1',
     category: 'Antropología'
+  },
+  {
+    id: 'v17',
+    title: 'Memento',
+    synopsis: '¿Es posible conocer la verdad sin una memoria lineal? Un laberinto gnoseológico donde Leonard nos recuerda que "los recuerdos son una interpretación, no un registro", desafiando la objetividad de nuestra propia historia.',
+    url: 'https://drive.google.com/file/d/1Z8P8L8aedx7_YYrvR9jTWDhKWqWTUP0S/preview',
+    cover: 'https://www.dropbox.com/scl/fi/mlg6gbyxpey9qoxbwuozs/Memento.jpg?rlkey=3dntjhdweitzdaf3wg83e9eif&st=omfcxnsm&raw=1',
+    category: 'Gnoseología'
+  },
+  {
+    id: 'v18',
+    title: 'Taxi Driver',
+    synopsis: 'Un descenso a la alienación urbana y la descomposición social. A través de los ojos de Travis Bickle, nos preguntamos: ¿Quién define lo que es basura en una sociedad? Una crítica mordaz a la indiferencia política y la soledad estructural.',
+    url: 'https://drive.google.com/file/d/1IICUPKALfsuqayp2TwS93miiBRnT9aPy/preview',
+    cover: 'https://www.dropbox.com/scl/fi/snstqhholw2z7t630vnma/taxi-driver.jpeg?rlkey=qchrw70as5i5tswqayb4yegmt&st=lfdk1loo&raw=1',
+    category: 'Política y Sociedad'
+  },
+  {
+    id: 'v19',
+    title: 'Ágora',
+    synopsis: 'Un análisis sobre el conflicto entre la razón científica y el fanatismo religioso. La película explorara la instrumentalización política de la fe en la Alejandría del siglo IV y la lucha de Hipatia por preservar el conocimiento frente a la intolerancia.',
+    url: 'https://drive.google.com/file/d/1zusyu9bRifMA0tNyPuF1wywgztYZFWzH/preview',
+    cover: 'https://www.dropbox.com/scl/fi/m027i1fet91m4gfuzx4l7/Agora.jpeg?rlkey=tbetix6bj6o7dqh0nfxqco040&st=ehwkekqv&raw=1',
+    category: 'Política y Sociedad'
   }
 ];
 
