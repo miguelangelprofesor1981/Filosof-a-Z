@@ -1406,40 +1406,62 @@ function CinemaView({ t, onNavigate, direction }: { t: any, onNavigate: (v: View
                           className="mt-12 w-full aspect-video bg-black border-4 border-primary/30 rounded-sm overflow-hidden shadow-[0_0_50px_rgba(253,240,1,0.2)] relative"
                         >
                           {isVideoLoading && (
-                            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm">
+                            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/95 overflow-hidden">
+                              <div className="scanline" />
+                              <div className="film-grain" />
+                              <div className="grunge-texture" />
+                              
                               <div className="relative">
                                 <motion.div 
-                                  animate={{ rotate: 360 }}
-                                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                                  className="size-24 border-t-4 border-r-4 border-primary rounded-full"
+                                  animate={{ rotate: 360, scale: [1, 1.1, 1] }}
+                                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                                  className="size-32 border-4 border-primary/20 rounded-full animate-blob"
                                 />
                                 <motion.div 
-                                  animate={{ rotate: -360 }}
-                                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                                  className="absolute inset-2 border-b-4 border-l-4 border-primary-light rounded-full opacity-50"
+                                  animate={{ rotate: -360, scale: [1, 1.2, 1] }}
+                                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                                  className="absolute inset-4 border-2 border-primary/40 rounded-full animate-blob"
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                  <Film className="text-primary animate-pulse" size={32} />
+                                  <motion.div
+                                    animate={{ 
+                                      scale: [1, 1.2, 0.9, 1.1, 1],
+                                      rotate: [0, 5, -5, 2, 0],
+                                      filter: [
+                                        'drop-shadow(0 0 0px transparent)',
+                                        'drop-shadow(0 0 15px #fdf001)',
+                                        'drop-shadow(0 0 0px transparent)'
+                                      ]
+                                    }}
+                                    transition={{ duration: 0.5, repeat: Infinity }}
+                                  >
+                                    <Zap className="text-primary fill-primary/20" size={48} />
+                                  </motion.div>
                                 </div>
                               </div>
-                              <motion.div 
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5 }}
-                                className="mt-8 text-center"
-                              >
-                                <p className="text-primary font-black uppercase tracking-[0.3em] text-xs mb-2">Iniciando Proyección</p>
-                                <div className="flex gap-1 justify-center">
-                                  {[0, 1, 2].map((i) => (
+                              
+                              <div className="mt-12 text-center relative z-10">
+                                <motion.p 
+                                  className="text-primary font-black uppercase tracking-[0.5em] text-sm animate-glitch-subtle"
+                                  animate={{ opacity: [0.5, 1, 0.5] }}
+                                  transition={{ duration: 0.2, repeat: Infinity }}
+                                >
+                                  Cargando Realidad
+                                </motion.p>
+                                <div className="mt-4 flex gap-2 justify-center">
+                                  {[0, 1, 2, 3, 4].map((i) => (
                                     <motion.div
                                       key={i}
-                                      animate={{ opacity: [0, 1, 0] }}
-                                      transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
-                                      className="size-1.5 bg-primary rounded-full"
+                                      animate={{ 
+                                        height: [4, 16, 4],
+                                        backgroundColor: ['#fdf001', '#ffffff', '#fdf001']
+                                      }}
+                                      transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.1 }}
+                                      className="w-1 bg-primary"
                                     />
                                   ))}
                                 </div>
-                              </motion.div>
+                              </div>
                             </div>
                           )}
                           <iframe 

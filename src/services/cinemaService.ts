@@ -111,6 +111,22 @@ export const CINEMA_CATALOG: Video[] = [
     url: 'https://drive.google.com/file/d/1x33r6fWzFJv0nVDKUTy_3XKf4IcpZkdC/preview',
     cover: 'https://www.dropbox.com/scl/fi/3p4thnx11oehnqrhw0muc/La-substancia.jpeg?rlkey=xt5s6y4tul0g5iesumn91z3jv&st=92fkrz2t&raw=1',
     category: 'Estética'
+  },
+  {
+    id: 'v15',
+    title: 'Pecados Capitales',
+    synopsis: 'Un descenso visceral a la moralidad urbana. La obra explora el conflicto entre la ética deontológica de los detectives —el cumplimiento del deber y la ley como imperativos categóricos— y la visión teleológica del asesino John Doe, quien justifica la atrocidad de sus medios en función de un fin "purificador": exponer la decadencia de la sociedad. Somerset representa la reflexión ética frente al nihilismo, mientras Mills encarna la vulnerabilidad de la virtud ante la provocación del mal absoluto.',
+    url: 'https://drive.google.com/file/d/1FzS3Cy2Fa5yHdPx_PmklFyqQY_C7UVOC/preview',
+    cover: 'https://www.dropbox.com/scl/fi/772lh0m1gdyxpzjferq9t/Seven.jpeg?rlkey=w17prllzo78c7m39hervfoz1r&st=ibct9cr7&raw=1',
+    category: 'Ética'
+  },
+  {
+    id: 'v16',
+    title: 'La pasión de Cristo',
+    synopsis: 'Una reflexión sobre el sentido del sufrimiento, la finitud y el cuerpo como lugar de padecimiento. Un estudio antropológico sobre la resiliencia y la trascendencia a través del dolor.',
+    url: 'https://drive.google.com/file/d/1Mw6cx_oKbOnu2SHP2WNMUIar2RzqWTWo/preview',
+    cover: 'https://www.dropbox.com/scl/fi/oc5vef1fygt9m3p6isscw/La_pasiaon_de_Cristo-731264185-large.jpg?rlkey=yrahjuli77bz79a4o24c21zrf&st=rzo4ko6z&raw=1',
+    category: 'Antropología'
   }
 ];
 
