@@ -1712,9 +1712,9 @@ function LibraryView({ t, onNavigate, direction, ai }: { t: any, onNavigate: (v:
                 link: "https://drive.google.com/file/d/1e2vAahqA-wh0CPDaJjnMkqAyQDq_s7z8/view?usp=sharing"
               },
               { 
-                title: "La sociedad del cansancio", 
-                url: "https://www.dropbox.com/scl/fo/gps0yu5br2gcgaoail7cv/AHAAQZ-2IsvBNyexdfTwXzM/La%20sociedad%20del%20cansancio.jpeg?rlkey=sra0zf885wydnxh8dqar4zujq&raw=1",
-                link: "https://drive.google.com/file/d/1denucMO_rT6417lW5qWUuMQJ7Cg4Fcq4/view?usp=sharing"
+                title: "Topología de la violencia", 
+                url: "https://www.dropbox.com/scl/fi/pzpr5qkgejlyrfdybgs19/Topolkog-a.jpg?rlkey=9ke7sroosodg20m81yvymub29&st=u2zaxmcf&raw=1",
+                link: "https://drive.google.com/file/d/1m6Qo5mboZOdrrpwQMCYVY_w-sQWz2UjD/view?usp=sharing"
               },
               { 
                 title: "Los Simpsons y la filosofía", 

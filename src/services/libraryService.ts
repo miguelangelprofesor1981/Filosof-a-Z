@@ -26,9 +26,9 @@ export const LIBRARY_CATALOG: Book[] = [
   },
   {
     id: '3',
-    title: 'La Sociedad del Cansancio',
+    title: 'Topología de la violencia',
     author: 'Byung-Chul Han',
-    driveId: '1JEKRq0dRDLCFfEWyIQl179jXvmzRJxeV',
+    driveId: '1m6Qo5mboZOdrrpwQMCYVY_w-sQWz2UjD',
     category: 'Contemporánea'
   },
   {
