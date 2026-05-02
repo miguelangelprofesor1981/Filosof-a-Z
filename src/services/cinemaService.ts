@@ -159,6 +159,22 @@ export const CINEMA_CATALOG: Video[] = [
     url: 'https://drive.google.com/file/d/1UKeDf-x2BrO4wbq6sgBL25-RL9arW-Cj/preview',
     cover: 'https://www.dropbox.com/scl/fi/8x86uzy4h0202zulicyvu/La-purga-2013.jpeg?rlkey=ybiq6qqqk6ypm3gv9uooxn0kv&st=sez4e4r8&raw=1',
     category: 'Ética'
+  },
+  {
+    id: 'v21',
+    title: 'El Demoledor',
+    synopsis: 'Una distopía sobre el orden, el control social y la libertad individual. En una sociedad aparentemente perfecta que ha erradicado la violencia a costa de la castración emocional y la prohibición de la disidencia, ¿es preferible la seguridad absoluta o la libertad caótica? Un análisis sobre el contrato social disciplinario.',
+    url: 'https://drive.google.com/file/d/1diptiMtNJAOu2ag4uQJUirPBwlfHfv_o/preview',
+    cover: 'https://www.dropbox.com/scl/fi/0cf6psro1j39ih46mqp1l/el-demoledor.jpg?rlkey=hhtnd9jjyxwr195c27tqurdpz&st=16ez5hqi&raw=1',
+    category: 'Política y Sociedad'
+  },
+  {
+    id: 'v22',
+    title: 'V de Venganza',
+    synopsis: 'Un manifiesto sobre la resistencia, la identidad colectiva y el poder de las ideas frente a la tiranía totalitaria. ¿Puede un símbolo trascender a la persona? Una exploración sobre el uso de la violencia como herramienta de liberación política y el despertar de la conciencia social.',
+    url: 'https://drive.google.com/file/d/1PxIsQgijNxJjWDwKkW22T3-DS5ZYeJZN/preview',
+    cover: 'https://www.dropbox.com/scl/fi/784v7702a06gxfcjnd309/V-de-venganza.jpg?rlkey=hfaij6bygpqhnojgo2vgmsqii&st=xanygi0l&raw=1',
+    category: 'Política y Sociedad'
   }
 ];
 
