@@ -151,6 +151,14 @@ export const CINEMA_CATALOG: Video[] = [
     url: 'https://drive.google.com/file/d/1zusyu9bRifMA0tNyPuF1wywgztYZFWzH/preview',
     cover: 'https://www.dropbox.com/scl/fi/m027i1fet91m4gfuzx4l7/Agora.jpeg?rlkey=tbetix6bj6o7dqh0nfxqco040&st=ehwkekqv&raw=1',
     category: 'Política y Sociedad'
+  },
+  {
+    id: 'v20',
+    title: 'La purga',
+    synopsis: 'Un experimento social que cuestiona los límites de la moralidad y el contrato social. ¿Es ético sacrificar a una minoría en pos de una estabilidad utilitarista? Una reflexión sobre la naturaleza humana y la ética del egoísmo frente a la justicia distributiva.',
+    url: 'https://drive.google.com/file/d/1UKeDf-x2BrO4wbq6sgBL25-RL9arW-Cj/preview',
+    cover: 'https://www.dropbox.com/scl/fi/8x86uzy4h0202zulicyvu/La-purga-2013.jpeg?rlkey=ybiq6qqqk6ypm3gv9uooxn0kv&st=sez4e4r8&raw=1',
+    category: 'Ética'
   }
 ];
 
