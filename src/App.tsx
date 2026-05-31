@@ -339,8 +339,39 @@ export default function App() {
         </div>
       </aside>
 
+      {/* Mobile Top Bar */}
+      {currentView !== 'landing' && (
+        <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-punk-black/95 border-b border-white/10 z-[80] flex items-center justify-between px-6 backdrop-blur-md shadow-md">
+          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => handleNavigate('dashboard')}>
+            <div className="size-8 bg-primary text-black rounded-sm flex items-center justify-center font-black text-xl font-serif border border-white -rotate-3 shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)]">Z</div>
+            <h1 className="text-white text-md font-bold font-serif italic tracking-wide">
+              {currentView === 'dashboard' ? 'Filosofía Z' : 
+               currentView === 'library' ? 'Biblioteca' : 
+               currentView === 'chat' ? 'Chat Socrático' : 
+               currentView === 'cinema' ? 'Videoteca' : 
+               currentView === 'cronos' ? 'Cronos' : 'Filosofía Z'}
+            </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="size-2 bg-primary shadow-[0_0_8px_#fdf001] rounded-full animate-pulse"></span>
+            <span className="text-[9px] text-gray-400 bg-white/5 border border-white/10 px-2 py-0.5 rounded uppercase font-bold tracking-wider">PWA APP</span>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Bottom Navigation Bar */}
+      {currentView !== 'landing' && (
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-punk-black/95 border-t border-white/10 z-[80] flex items-center justify-around px-2 pb-safe backdrop-blur-md shadow-2xl">
+          <MobileNavItem active={currentView === 'dashboard'} icon={<Home size={20} />} label={t.nav_home} onClick={() => handleNavigate('dashboard')} />
+          <MobileNavItem active={currentView === 'library'} icon={<BookOpen size={20} />} label={t.nav_library} onClick={() => handleNavigate('library')} />
+          <MobileNavItem active={currentView === 'chat'} icon={<MessageSquare size={20} />} label={t.nav_chat} onClick={() => handleNavigate('chat')} />
+          <MobileNavItem active={currentView === 'cinema'} icon={<Film size={20} />} label={t.nav_cinema} onClick={() => handleNavigate('cinema')} />
+          <MobileNavItem active={currentView === 'cronos'} icon={<Clock size={20} />} label={t.nav_cronos} onClick={() => handleNavigate('cronos')} />
+        </nav>
+      )}
+
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col relative z-10 overflow-hidden perspective-1200">
+      <main className={`flex-1 flex flex-col relative z-10 overflow-hidden perspective-1200 ${currentView !== 'landing' ? 'pt-16 pb-20 md:pt-0 md:pb-0' : ''}`}>
         <AnimatePresence mode="wait" custom={direction}>
           {currentView === 'landing' && <LandingView onStart={() => handleNavigate('dashboard')} t={t} direction={direction} />}
           {currentView === 'dashboard' && (
@@ -439,6 +470,27 @@ function NavItem({ active, icon, label, onClick }: { active: boolean, icon: Reac
   );
 }
 
+function MobileNavItem({ active, icon, label, onClick }: { active: boolean, icon: React.ReactNode, label: string, onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-current={active ? 'page' : undefined}
+      aria-label={label}
+      className={`flex flex-col items-center justify-center gap-1 py-1.5 px-3 transition-all rounded-md w-16 h-14 active:scale-95 touch-manipulation ${
+        active 
+          ? 'text-primary' 
+          : 'text-gray-400 hover:text-white'
+      }`}
+      style={{ minHeight: '44px' }}
+    >
+      <div className={`transition-transform duration-200 ${active ? 'scale-115 text-primary' : 'opacity-80'}`} aria-hidden="true">
+        {icon}
+      </div>
+      <span className="text-[9px] uppercase tracking-wider font-extrabold whitespace-nowrap overflow-hidden text-ellipsis w-full text-center leading-none">{label}</span>
+    </button>
+  );
+}
+
 // --- VIEWS ---
 
 // --- COMPONENTS ---
@@ -530,7 +582,7 @@ function LandingView({ onStart, t, direction }: { onStart: () => void, t: any, d
       initial="initial"
       animate="animate"
       exit="exit"
-      className="relative h-full w-full flex items-center px-16 overflow-hidden backface-hidden preserve-3d"
+      className="relative h-full w-full flex items-center px-6 md:px-16 overflow-hidden backface-hidden preserve-3d"
     >
       <GraffitiOverlay 
         phrases={["NO FUTURE", "KAOS", "RESISTIR", "DIY"]} 
@@ -657,7 +709,7 @@ function DashboardView({ onNavigate, readings, onRemoveReading, onRead, onShowRe
       initial="initial"
       animate="animate"
       exit="exit"
-      className="flex-1 overflow-y-auto p-12 custom-scrollbar backface-hidden preserve-3d relative"
+      className="flex-1 overflow-y-auto p-6 md:p-12 custom-scrollbar backface-hidden preserve-3d relative"
     >
       <GraffitiOverlay 
         phrases={["PENSAR ES RESISTIR", "Z", "DECONSTRUCCION", "REBELDIA"]} 

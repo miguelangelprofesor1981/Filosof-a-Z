@@ -76,7 +76,7 @@ export const CINEMA_CATALOG: Video[] = [
     id: 'v10',
     title: 'La leyenda del jinete sin cabeza',
     synopsis: 'Un análisis sobre la superstición, la razón y la construcción de mitos en la transición a la modernidad. ¿Es el jinete una realidad física o una proyección del miedo colectivo?',
-    url: 'https://drive.google.com/file/d/1BphRoyI90oyKE4kGs5tJWCsuUR1BXCUv/preview',
+    url: 'https://drive.google.com/file/d/1QBefM1fqg6wdK0hJv4HzKmhSxi2GuoAP/preview',
     cover: 'https://www.dropbox.com/scl/fi/ubjr5a3fky9930n69p6nv/El-jinete-sin-cabeza.jpg?rlkey=6u3gn22nlr4wrl3f399jh7njy&st=p3pjnw5v&raw=1',
     category: 'Gnoseología'
   },
