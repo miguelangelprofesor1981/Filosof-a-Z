@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#121212"/>
+  <rect x="32" y="32" width="448" height="448" rx="24" fill="#18181b" stroke="#fdf001" stroke-width="12"/>
+  <g transform="rotate(-3 256 256)">
+    <rect x="116" y="116" width="280" height="280" rx="16" fill="#fdf001" stroke="#ffffff" stroke-width="10"/>
+    <text x="256" y="325" font-family="serif, Georgia, Times" font-size="240" font-weight="900" text-anchor="middle" fill="#000000">Z</text>
+  </g>
+</svg>

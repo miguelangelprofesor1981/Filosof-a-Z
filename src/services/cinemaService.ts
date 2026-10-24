@@ -41,14 +41,6 @@ export const CINEMA_CATALOG: Video[] = [
     category: 'Ética'
   },
   {
-    id: 'v3',
-    title: 'Los Simpsons',
-    synopsis: 'Sátira social y crítica política. ¿Es la familia Simpson un reflejo de la decadencia de los valores occidentales o una resistencia cínica?',
-    url: 'https://t.me/tuspeliculas15555/32',
-    cover: 'https://www.dropbox.com/scl/fi/8og9dudmbdm1ysl84x5j5/Simpsons.jpg?rlkey=drx2jtzfm0zvaxax93iyas0l0&st=jqv6g9fm&raw=1',
-    category: 'Política y Sociedad'
-  },
-  {
     id: 'v4',
     title: 'La Aldea',
     synopsis: 'El miedo como herramienta de control político. Una reflexión sobre el contrato social y la construcción de la verdad en comunidades aisladas.',
